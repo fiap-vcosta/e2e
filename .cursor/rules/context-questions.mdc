@@ -1,0 +1,11 @@
+---
+description: Nunca assumir contexto; perguntar antes de decisões ambíguas
+alwaysApply: true
+---
+
+# Contexto e perguntas
+
+- Nunca assumir o contrato dos cenários de ponta a ponta quando estiver ambíguo.
+- Antes de mudar o contrato dos cenários de ponta a ponta: explicitar a dúvida e perguntar.
+- Preferir 1–2 perguntas críticas por vez; propor opções concretas quando houver caminhos válidos distintos.
+- Canon: README deste repositório.

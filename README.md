@@ -1,2 +1,3 @@
 # e2e
-Compose geral, testes BDD e collections HTTP do sistema.
+
+Compose do sistema, testes de ponta a ponta e collections HTTP. Este repositório não contém código de serviço. Org [fiap-vcosta](https://github.com/fiap-vcosta).
