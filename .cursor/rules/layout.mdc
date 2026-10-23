@@ -1,0 +1,12 @@
+---
+description: Layout do compose, BDD e diagramas (e2e)
+alwaysApply: true
+---
+
+# Layout (`e2e`)
+
+- Docker Compose do sistema inteiro
+- BDD com Reqnroll
+- Collections HTTP
+- Diagramas de arquitetura
+- Sem código-fonte de microsserviço
