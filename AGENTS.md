@@ -12,10 +12,19 @@ Compose do sistema, testes de ponta a ponta (Reqnroll), collections HTTP e diagr
 
 Compose do sistema inteiro, BDD com Reqnroll, collections HTTP e diagramas de arquitetura.
 
+| Peça | Papel |
+|------|--------|
+| `.github/workflows/demo-up.yml` / `demo-down.yml` | Orquestra `tf-apply` / `tf-destroy` / `deploy` nos outros repos (PAT `DEMO_ORCHESTRATOR_PAT`) |
+| `scripts/gh-dispatch-wait*.sh` | Dispara workflow e espera o run |
+
 ## Fora de escopo
 
-Domínio dos serviços e Terraform da GCP.
+Código de domínio dos serviços e root modules Terraform da GCP (só orquestra callers já existentes).
 
 ## Comandos
 
-Ainda não há compose, suíte BDD nem collections. Não inventar comandos até esses artefatos existirem.
+```bash
+# Na UI do repo e2e: Actions → demo-up / demo-down → Run workflow
+```
+
+Compose / BDD / collections ainda não existem — não inventar comandos `dotnet` até chegarem.

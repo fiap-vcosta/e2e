@@ -5,6 +5,6 @@ alwaysApply: true
 
 # Restrições do projeto (`e2e`)
 
-- Escopo: compose do sistema, testes BDD, collections HTTP e diagramas de arquitetura.
-- Não é dono do código de domínio dos serviços nem do Terraform da GCP.
+- Escopo: compose do sistema, testes BDD, collections HTTP, diagramas e **orquestração** `demo-up` / `demo-down` (dispara workflows dos outros repos; não copia Terraform).
+- Não é dono do código de domínio dos serviços nem dos root modules Terraform da GCP.
 - README autocontido: sem referências a pastas fora do Git nem a numeração de documentos pessoais.
