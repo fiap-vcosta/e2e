@@ -10,74 +10,23 @@ concurrency:
 permissions:
   contents: read
 
-env:
-  ORG: fiap-vcosta
-  POLL_SECONDS: "20"
-
 jobs:
-  infra-k8s-tf-destroy:
-    name: destroy / infra-k8s
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+  k8s:
+    name: k8s
+    uses: ./.github/workflows/demo-phase-k8s-down.yml
+    secrets:
+      DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
 
-      - name: Dispatch tf-destroy
-        env:
-          DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
-        run: |
-          set -euo pipefail
-          [[ -n "${DEMO_ORCHESTRATOR_PAT}" ]] || { echo "secret DEMO_ORCHESTRATOR_PAT faltando" >&2; exit 1; }
-          echo "$DEMO_ORCHESTRATOR_PAT" | gh auth login --with-token
-          chmod +x scripts/gh-dispatch-wait.sh
-          ./scripts/gh-dispatch-wait.sh infra-k8s tf-destroy.yml
+  tf-servicos:
+    name: tf-servicos
+    needs: k8s
+    uses: ./.github/workflows/demo-phase-services-down.yml
+    secrets:
+      DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
 
-  service-tf-destroy:
-    name: destroy / ${{ matrix.repo }}
-    needs: infra-k8s-tf-destroy
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      matrix:
-        repo:
-          - administrativo-service
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Dispatch tf-destroy
-        env:
-          DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
-        run: |
-          set -euo pipefail
-          [[ -n "${DEMO_ORCHESTRATOR_PAT}" ]] || { echo "secret DEMO_ORCHESTRATOR_PAT faltando" >&2; exit 1; }
-          echo "$DEMO_ORCHESTRATOR_PAT" | gh auth login --with-token
-          chmod +x scripts/gh-dispatch-wait.sh
-          ./scripts/gh-dispatch-wait.sh "${{ matrix.repo }}" tf-destroy.yml
-
-  infra-rest-tf-destroy:
-    name: destroy / ${{ matrix.repo }}
-    needs: service-tf-destroy
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      matrix:
-        repo:
-          - infra-db
-          - infra-events
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Dispatch tf-destroy
-        env:
-          DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
-        run: |
-          set -euo pipefail
-          [[ -n "${DEMO_ORCHESTRATOR_PAT}" ]] || { echo "secret DEMO_ORCHESTRATOR_PAT faltando" >&2; exit 1; }
-          echo "$DEMO_ORCHESTRATOR_PAT" | gh auth login --with-token
-          chmod +x scripts/gh-dispatch-wait.sh
-          ./scripts/gh-dispatch-wait.sh "${{ matrix.repo }}" tf-destroy.yml
+  infra:
+    name: infra
+    needs: tf-servicos
+    uses: ./.github/workflows/demo-phase-infra-rest-down.yml
+    secrets:
+      DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}

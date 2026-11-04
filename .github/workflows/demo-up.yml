@@ -10,81 +10,23 @@ concurrency:
 permissions:
   contents: read
 
-env:
-  ORG: fiap-vcosta
-  POLL_SECONDS: "20"
-
 jobs:
-  infra-tf-apply:
-    name: infra / ${{ matrix.repo }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    strategy:
-      fail-fast: false
-      matrix:
-        repo:
-          - infra-db
-          - infra-k8s
-          - infra-events
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+  infra:
+    name: infra
+    uses: ./.github/workflows/demo-phase-infra-up.yml
+    secrets:
+      DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
 
-      - name: Dispatch tf-apply
-        env:
-          DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
-        run: |
-          set -euo pipefail
-          [[ -n "${DEMO_ORCHESTRATOR_PAT}" ]] || { echo "secret DEMO_ORCHESTRATOR_PAT faltando" >&2; exit 1; }
-          echo "$DEMO_ORCHESTRATOR_PAT" | gh auth login --with-token
-          chmod +x scripts/gh-dispatch-wait.sh
-          ./scripts/gh-dispatch-wait.sh "${{ matrix.repo }}" tf-apply.yml
+  tf-servicos:
+    name: tf-servicos
+    needs: infra
+    uses: ./.github/workflows/demo-phase-services-tf-up.yml
+    secrets:
+      DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
 
-  service-tf-apply:
-    name: tf-apply / ${{ matrix.repo }}
-    needs: infra-tf-apply
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      matrix:
-        # Acrescentar conforme checklist §14
-        repo:
-          - administrativo-service
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Dispatch tf-apply
-        env:
-          DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
-        run: |
-          set -euo pipefail
-          [[ -n "${DEMO_ORCHESTRATOR_PAT}" ]] || { echo "secret DEMO_ORCHESTRATOR_PAT faltando" >&2; exit 1; }
-          echo "$DEMO_ORCHESTRATOR_PAT" | gh auth login --with-token
-          chmod +x scripts/gh-dispatch-wait.sh
-          ./scripts/gh-dispatch-wait.sh "${{ matrix.repo }}" tf-apply.yml
-
-  service-deploy:
-    name: deploy / ${{ matrix.repo }}
-    needs: service-tf-apply
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      matrix:
-        repo:
-          - administrativo-service
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Dispatch deploy
-        env:
-          DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
-        run: |
-          set -euo pipefail
-          [[ -n "${DEMO_ORCHESTRATOR_PAT}" ]] || { echo "secret DEMO_ORCHESTRATOR_PAT faltando" >&2; exit 1; }
-          echo "$DEMO_ORCHESTRATOR_PAT" | gh auth login --with-token
-          chmod +x scripts/gh-dispatch-wait.sh
-          ./scripts/gh-dispatch-wait.sh "${{ matrix.repo }}" deploy.yml
+  deploy:
+    name: deploy
+    needs: tf-servicos
+    uses: ./.github/workflows/demo-phase-services-deploy.yml
+    secrets:
+      DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
