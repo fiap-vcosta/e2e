@@ -14,8 +14,8 @@ Compose do sistema inteiro, BDD com Reqnroll, collections HTTP e diagramas de ar
 
 | Peça | Papel |
 |------|--------|
-| `.github/workflows/demo-up.yml` / `demo-down.yml` | Orquestra `tf-apply` / `tf-destroy` / `deploy` nos outros repos (PAT `DEMO_ORCHESTRATOR_PAT`) |
-| `scripts/gh-dispatch-wait*.sh` | Dispara workflow e espera o run |
+| `.github/workflows/demo-up.yml` / `demo-down.yml` | Jobs em matrix/`needs` (como o CI legado); dispara workflows nos outros repos (PAT `DEMO_ORCHESTRATOR_PAT`) |
+| `scripts/gh-dispatch-wait.sh` | Dispara um workflow e espera o run (`POLL_SECONDS=20`) |
 
 ## Fora de escopo
 

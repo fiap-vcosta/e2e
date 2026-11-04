@@ -12,12 +12,14 @@ Contrato entre os serviços:
 
 Workflows manuais que disparam, via `gh`, os `tf-apply` / `tf-destroy` / `deploy` dos outros repos e esperam o resultado.
 
-| Workflow | Ordem |
-|----------|--------|
-| [`demo-up`](.github/workflows/demo-up.yml) | `infra-db` ∥ `infra-k8s` ∥ `infra-events` → `tf-apply` dos serviços → `deploy` dos serviços |
-| [`demo-down`](.github/workflows/demo-down.yml) | `infra-k8s` destroy → `tf-destroy` dos serviços → `infra-db` ∥ `infra-events` destroy |
+| Workflow | Jobs (UI) |
+|----------|-----------|
+| [`demo-up`](.github/workflows/demo-up.yml) | matrix `infra / *` (∥) → matrix `tf-apply / *` → matrix `deploy / *` |
+| [`demo-down`](.github/workflows/demo-down.yml) | `destroy / infra-k8s` → matrix `destroy / <serviço>` → matrix `destroy / infra-db` ∥ `infra-events` |
 
-Serviços na lista hoje: **`administrativo-service`**. Acrescentar os demais em `SERVICE_REPOS` nos dois YAMLs quando o repo tiver `tf-apply` / `tf-destroy` / `deploy`.
+Serviços na matrix hoje: **`administrativo-service`**. Acrescentar no `matrix.repo` dos dois YAMLs quando o repo tiver `tf-apply` / `tf-destroy` / `deploy`.
+
+O `gh run watch` usa intervalo de **20s** (`POLL_SECONDS`) para não poluir o log.
 
 ### Secret
 
