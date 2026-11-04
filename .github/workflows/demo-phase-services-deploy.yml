@@ -1,0 +1,35 @@
+name: demo-phase-services-deploy
+
+on:
+  workflow_call:
+    secrets:
+      DEMO_ORCHESTRATOR_PAT:
+        required: true
+
+env:
+  ORG: fiap-vcosta
+  POLL_SECONDS: "20"
+
+jobs:
+  deploy:
+    name: ${{ matrix.repo }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        # Acrescentar conforme checklist §14
+        repo:
+          - administrativo-service
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Dispatch deploy
+        env:
+          DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
+        run: |
+          set -euo pipefail
+          echo "$DEMO_ORCHESTRATOR_PAT" | gh auth login --with-token
+          chmod +x scripts/gh-dispatch-wait.sh
+          ./scripts/gh-dispatch-wait.sh "${{ matrix.repo }}" deploy.yml

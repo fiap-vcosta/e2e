@@ -10,51 +10,23 @@ concurrency:
 permissions:
   contents: read
 
-env:
-  ORG: fiap-vcosta
-  # Infra sempre. Serviços: ir acrescentando conforme o tf-apply/deploy do repo existir (ver checklist §14).
-  INFRA_REPOS: infra-db infra-k8s infra-events
-  SERVICE_REPOS: administrativo-service
-
 jobs:
-  up:
-    name: Subir janela GCP
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+  infra:
+    name: infra
+    uses: ./.github/workflows/demo-phase-infra-up.yml
+    secrets:
+      DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
 
-      - name: Check orchestrator token
-        env:
-          DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
-        run: |
-          if [[ -z "${DEMO_ORCHESTRATOR_PAT}" ]]; then
-            echo "secret DEMO_ORCHESTRATOR_PAT faltando (org ou repo e2e)" >&2
-            exit 1
-          fi
+  tf-servicos:
+    name: tf-servicos
+    needs: infra
+    uses: ./.github/workflows/demo-phase-services-tf-up.yml
+    secrets:
+      DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
 
-      - name: Setup gh auth
-        env:
-          DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
-        run: |
-          echo "$DEMO_ORCHESTRATOR_PAT" | gh auth login --with-token
-          chmod +x scripts/gh-dispatch-wait.sh scripts/gh-dispatch-wait-many.sh
-
-      - name: Infra tf-apply (paralelo)
-        run: ./scripts/gh-dispatch-wait-many.sh tf-apply.yml $INFRA_REPOS
-
-      - name: Serviços tf-apply (paralelo)
-        run: ./scripts/gh-dispatch-wait-many.sh tf-apply.yml $SERVICE_REPOS
-
-      - name: Serviços deploy (paralelo)
-        run: ./scripts/gh-dispatch-wait-many.sh deploy.yml $SERVICE_REPOS
-
-      - name: Summary
-        run: |
-          {
-            echo "## demo-up"
-            echo ""
-            echo "- Infra: \`$INFRA_REPOS\`"
-            echo "- Serviços: \`$SERVICE_REPOS\`"
-          } >> "$GITHUB_STEP_SUMMARY"
+  deploy:
+    name: deploy
+    needs: tf-servicos
+    uses: ./.github/workflows/demo-phase-services-deploy.yml
+    secrets:
+      DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}

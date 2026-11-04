@@ -10,52 +10,23 @@ concurrency:
 permissions:
   contents: read
 
-env:
-  ORG: fiap-vcosta
-  # Manter alinhado ao demo-up (checklist §14).
-  SERVICE_REPOS: administrativo-service
-  INFRA_AFTER_SERVICES: infra-db infra-events
-
 jobs:
-  down:
-    name: Descer janela GCP
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+  k8s:
+    name: k8s
+    uses: ./.github/workflows/demo-phase-k8s-down.yml
+    secrets:
+      DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
 
-      - name: Check orchestrator token
-        env:
-          DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
-        run: |
-          if [[ -z "${DEMO_ORCHESTRATOR_PAT}" ]]; then
-            echo "secret DEMO_ORCHESTRATOR_PAT faltando (org ou repo e2e)" >&2
-            exit 1
-          fi
+  tf-servicos:
+    name: tf-servicos
+    needs: k8s
+    uses: ./.github/workflows/demo-phase-services-down.yml
+    secrets:
+      DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
 
-      - name: Setup gh auth
-        env:
-          DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
-        run: |
-          echo "$DEMO_ORCHESTRATOR_PAT" | gh auth login --with-token
-          chmod +x scripts/gh-dispatch-wait.sh scripts/gh-dispatch-wait-many.sh
-
-      - name: infra-k8s tf-destroy
-        run: ./scripts/gh-dispatch-wait.sh infra-k8s tf-destroy.yml
-
-      - name: Serviços tf-destroy (paralelo)
-        run: ./scripts/gh-dispatch-wait-many.sh tf-destroy.yml $SERVICE_REPOS
-
-      - name: infra-db ∥ infra-events tf-destroy
-        run: ./scripts/gh-dispatch-wait-many.sh tf-destroy.yml $INFRA_AFTER_SERVICES
-
-      - name: Summary
-        run: |
-          {
-            echo "## demo-down"
-            echo ""
-            echo "- Cluster: \`infra-k8s\` destruído"
-            echo "- Serviços: \`$SERVICE_REPOS\`"
-            echo "- Restante: \`$INFRA_AFTER_SERVICES\`"
-          } >> "$GITHUB_STEP_SUMMARY"
+  infra:
+    name: infra
+    needs: tf-servicos
+    uses: ./.github/workflows/demo-phase-infra-rest-down.yml
+    secrets:
+      DEMO_ORCHESTRATOR_PAT: ${{ secrets.DEMO_ORCHESTRATOR_PAT }}
