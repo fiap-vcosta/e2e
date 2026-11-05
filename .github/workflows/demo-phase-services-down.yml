@@ -22,6 +22,7 @@ jobs:
         repo:
           - administrativo-service
           - autenticacao-service
+          - estoque-service
     steps:
       - name: Checkout
         uses: actions/checkout@v6
