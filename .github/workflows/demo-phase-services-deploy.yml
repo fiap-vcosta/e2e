@@ -21,6 +21,7 @@ jobs:
         # Acrescentar conforme checklist §14
         repo:
           - administrativo-service
+          - autenticacao-service
     steps:
       - name: Checkout
         uses: actions/checkout@v6
