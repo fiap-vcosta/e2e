@@ -2,7 +2,7 @@
 
 Paths públicos usam o nome do serviço sem o sufixo `-service` e sem o prefixo `/api`: `/ordem-servico`, `/estoque`, `/orcamento`, `/administrativo`, `/autenticacao`. Cada serviço declara esse prefixo nas rotas. O API Gateway repassa o path inteiro.
 
-Rotas `/system/{servico}/...` existem só na rede do cluster (DNS do Kubernetes ou nome do container no compose). Não entram no API Gateway nem no HTTPRoute público. Exigem o header `X-Service-Key`. Chave ausente ou diferente responde 401.
+Rotas `/system/{servico}/...` existem só na rede do cluster (DNS do Kubernetes ou nome do container no compose). Não entram no API Gateway nem no HTTPRoute público. Exigem o header `X-Service-Key` com a **mesma** shared secret da malha (org/local `SERVICE_AUTH_KEY` → `ServiceAuth:Key` em todos os serviços). Chave ausente ou diferente responde 401.
 
 O webhook é público e anônimo. A proteção é a validação de `x-signature`.
 
