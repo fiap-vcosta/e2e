@@ -23,6 +23,7 @@ jobs:
           - administrativo-service
           - autenticacao-service
           - estoque-service
+          - ordem-servico-service
     steps:
       - name: Checkout
         uses: actions/checkout@v6
