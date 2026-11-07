@@ -17,7 +17,7 @@ Workflows manuais que disparam, via `gh`, os `tf-apply` / `tf-destroy` / `deploy
 | [`demo-up`](.github/workflows/demo-up.yml) | **infra** (`infra-db` ∥ `infra-k8s` ∥ `infra-events`) → **tf-servicos** → **deploy** |
 | [`demo-down`](.github/workflows/demo-down.yml) | **k8s** (`infra-k8s`) → **tf-servicos** → **infra** (`infra-db` ∥ `infra-events`) |
 
-Fases em `demo-phase-*.yml`. Serviços hoje: **`administrativo-service`**, **`autenticacao-service`** — acrescente no `matrix.repo` das phases de serviço (checklist §14).
+Fases em `demo-phase-*.yml`. Serviços hoje: **`administrativo-service`**, **`autenticacao-service`**, **`estoque-service`**, **`ordem-servico-service`** — acrescente no `matrix.repo` das phases de serviço (checklist §14).
 
 O `gh run watch` usa intervalo de **20s** (`POLL_SECONDS`).
 
