@@ -23,6 +23,7 @@ jobs:
           - administrativo-service
           - autenticacao-service
           - estoque-service
+          - orcamento-service
           - ordem-servico-service
     steps:
       - name: Checkout
