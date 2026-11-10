@@ -60,18 +60,23 @@ Um tópico por evento de domínio. O id do tópico é o nome em kebab-case. As d
 
 `versaoDiagnostico` é um inteiro da ordem de serviço. A primeira finalização de diagnóstico vale 1. Cada finalização seguinte, depois de a OS voltar a `EmDiagnostico`, incrementa o contador. `aprovadaEm` é o instante UTC em que a OS entrou em `ChecandoEstoque`, serializado em ISO-8601. `orcamentoId` e `cobrancaId` são strings atribuídas pelo `orcamento-service`. `cobrancaId` é o id da order no Mercado Pago. Ids de ordem, serviço e item de estoque permanecem inteiros.
 
-## Payloads (`version` 1)
+## Payloads
 
-Valores monetários e quantidades são números decimais. Status vão com o nome do enum (`Sugerido`, `Aprovado`, `Rejeitado`, `Concluido`, `EstoqueEmFalta`, `EstoqueTravado`).
+Valores monetários e quantidades são números decimais. Status vão com o nome do enum (`Sugerido`, `Aprovado`, `Rejeitado`, `Concluido`, `EstoqueEmFalta`, `EstoqueTravado`). Salvo indicação em contrário, o envelope usa `version` 1. Um campo novo incompatível sobe `version`.
 
-### `DiagnosticoFinalizado`
+### `DiagnosticoFinalizado` (`version` 2)
 
-A OS publica ao entrar em `AguardandoOrcamento`. O orçamento gera ou recalcula a partir desta lista. O total cobrado é a soma de `valorCobrado` dos serviços cujo `status` não é `Rejeitado`. Itens de estoque não entram neste payload: a reserva só acontece depois da aprovação.
+A OS publica ao entrar em `AguardandoOrcamento`. O orçamento gera ou recalcula a partir desta lista e persiste o `cliente` para a cobrança Pix. O total cobrado é a soma de `valorCobrado` dos serviços cujo `status` não é `Rejeitado`. Itens de estoque não entram neste payload: a reserva só acontece depois da aprovação.
 
 ```json
 {
   "ordemServicoId": 10,
   "versaoDiagnostico": 1,
+  "cliente": {
+    "nome": "Ada",
+    "email": "ada@oficina.dev",
+    "documento": "86421537090"
+  },
   "servicos": [
     { "id": 3, "nome": "Troca de óleo", "valorCobrado": 150.0, "status": "Sugerido" }
   ]
