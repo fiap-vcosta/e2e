@@ -1,6 +1,6 @@
 {
   "title": "[saga] dashboard",
-  "description": "Dashboard geral da Saga com grupos coloridos: monitores, APM, Pub/Sub entrada/saída/DLQ, Cloud SQL e transições de OS. Integração GCP necessária para Pub/Sub e SQL.",
+  "description": "Dashboard geral da Saga: monitores, golden metrics das APIs, Pub/Sub entrada/saída/DLQ, Cloud SQL, Firestore e transições de OS.",
   "layout_type": "ordered",
   "reflow_type": "auto",
   "widgets": [
@@ -30,25 +30,13 @@
               "title_size": "16",
               "title_align": "left"
             }
-          },
-          {
-            "definition": {
-              "type": "note",
-              "content": "Monitores nomeados `[servico] …` e `[saga] …`. Importe os JSON dos repos de serviço e do e2e.",
-              "background_color": "white",
-              "font_size": "14",
-              "text_align": "left",
-              "vertical_align": "top",
-              "show_tick": false,
-              "has_padding": true
-            }
           }
         ]
       }
     },
     {
       "definition": {
-        "title": "Aplicação",
+        "title": "APIs (golden metrics)",
         "background_color": "vivid_blue",
         "show_title": true,
         "type": "group",
@@ -84,7 +72,35 @@
           },
           {
             "definition": {
-              "title": "Erros HTTP por serviço",
+              "title": "Tráfego — hits por serviço",
+              "type": "timeseries",
+              "requests": [
+                {
+                  "q": "sum:trace.aspnet_core.request.hits{service:ordem-servico-service,env:prod}.as_count()",
+                  "display_type": "bars"
+                },
+                {
+                  "q": "sum:trace.aspnet_core.request.hits{service:estoque-service,env:prod}.as_count()",
+                  "display_type": "bars"
+                },
+                {
+                  "q": "sum:trace.aspnet_core.request.hits{service:orcamento-service,env:prod}.as_count()",
+                  "display_type": "bars"
+                },
+                {
+                  "q": "sum:trace.aspnet_core.request.hits{service:administrativo-service,env:prod}.as_count()",
+                  "display_type": "bars"
+                },
+                {
+                  "q": "sum:trace.aspnet_core.request.hits{service:autenticacao-service,env:prod}.as_count()",
+                  "display_type": "bars"
+                }
+              ]
+            }
+          },
+          {
+            "definition": {
+              "title": "Erros por serviço",
               "type": "timeseries",
               "requests": [
                 {
@@ -112,28 +128,28 @@
           },
           {
             "definition": {
-              "title": "Hits HTTP por serviço",
+              "title": "Taxa de erro por serviço",
               "type": "timeseries",
               "requests": [
                 {
-                  "q": "sum:trace.aspnet_core.request.hits{service:ordem-servico-service,env:prod}.as_count()",
-                  "display_type": "bars"
+                  "q": "(sum:trace.aspnet_core.request.errors{service:ordem-servico-service,env:prod}.as_count() / sum:trace.aspnet_core.request.hits{service:ordem-servico-service,env:prod}.as_count())",
+                  "display_type": "line"
                 },
                 {
-                  "q": "sum:trace.aspnet_core.request.hits{service:estoque-service,env:prod}.as_count()",
-                  "display_type": "bars"
+                  "q": "(sum:trace.aspnet_core.request.errors{service:estoque-service,env:prod}.as_count() / sum:trace.aspnet_core.request.hits{service:estoque-service,env:prod}.as_count())",
+                  "display_type": "line"
                 },
                 {
-                  "q": "sum:trace.aspnet_core.request.hits{service:orcamento-service,env:prod}.as_count()",
-                  "display_type": "bars"
+                  "q": "(sum:trace.aspnet_core.request.errors{service:orcamento-service,env:prod}.as_count() / sum:trace.aspnet_core.request.hits{service:orcamento-service,env:prod}.as_count())",
+                  "display_type": "line"
                 },
                 {
-                  "q": "sum:trace.aspnet_core.request.hits{service:administrativo-service,env:prod}.as_count()",
-                  "display_type": "bars"
+                  "q": "(sum:trace.aspnet_core.request.errors{service:administrativo-service,env:prod}.as_count() / sum:trace.aspnet_core.request.hits{service:administrativo-service,env:prod}.as_count())",
+                  "display_type": "line"
                 },
                 {
-                  "q": "sum:trace.aspnet_core.request.hits{service:autenticacao-service,env:prod}.as_count()",
-                  "display_type": "bars"
+                  "q": "(sum:trace.aspnet_core.request.errors{service:autenticacao-service,env:prod}.as_count() / sum:trace.aspnet_core.request.hits{service:autenticacao-service,env:prod}.as_count())",
+                  "display_type": "line"
                 }
               ]
             }
@@ -151,7 +167,7 @@
         "widgets": [
           {
             "definition": {
-              "title": "Undelivered by subscription",
+              "title": "Undelivered por subscription",
               "type": "timeseries",
               "requests": [
                 {
@@ -163,11 +179,35 @@
           },
           {
             "definition": {
-              "title": "Ack by subscription",
+              "title": "Ack message count",
               "type": "timeseries",
               "requests": [
                 {
                   "q": "sum:gcp.pubsub.subscription.ack_message_count{project_id:vcosta-fiap-tech-challenge AND (subscription_id:estoque-ordem-servico-aprovada OR subscription_id:estoque-ordem-servico-descartada OR subscription_id:estoque-ordem-servico-finalizada OR subscription_id:orcamento-diagnostico-finalizado OR subscription_id:orcamento-ordem-servico-descartada OR subscription_id:orcamento-ordem-servico-finalizada OR subscription_id:ordem-servico-cobranca-gerada OR subscription_id:ordem-servico-estoque-em-falta OR subscription_id:ordem-servico-estoque-reservado OR subscription_id:ordem-servico-orcamento-falhou OR subscription_id:ordem-servico-orcamento-gerado OR subscription_id:ordem-servico-pagamento-confirmado OR subscription_id:ordem-servico-pagamento-recusado)} by {subscription_id}.as_count()",
+                  "display_type": "bars"
+                }
+              ]
+            }
+          },
+          {
+            "definition": {
+              "title": "Oldest unacked age (s)",
+              "type": "timeseries",
+              "requests": [
+                {
+                  "q": "max:gcp.pubsub.subscription.oldest_unacked_message_age{project_id:vcosta-fiap-tech-challenge AND (subscription_id:estoque-ordem-servico-aprovada OR subscription_id:estoque-ordem-servico-descartada OR subscription_id:estoque-ordem-servico-finalizada OR subscription_id:orcamento-diagnostico-finalizado OR subscription_id:orcamento-ordem-servico-descartada OR subscription_id:orcamento-ordem-servico-finalizada OR subscription_id:ordem-servico-cobranca-gerada OR subscription_id:ordem-servico-estoque-em-falta OR subscription_id:ordem-servico-estoque-reservado OR subscription_id:ordem-servico-orcamento-falhou OR subscription_id:ordem-servico-orcamento-gerado OR subscription_id:ordem-servico-pagamento-confirmado OR subscription_id:ordem-servico-pagamento-recusado)} by {subscription_id}",
+                  "display_type": "line"
+                }
+              ]
+            }
+          },
+          {
+            "definition": {
+              "title": "Nack requests",
+              "type": "timeseries",
+              "requests": [
+                {
+                  "q": "sum:gcp.pubsub.subscription.nack_requests{project_id:vcosta-fiap-tech-challenge AND (subscription_id:estoque-ordem-servico-aprovada OR subscription_id:estoque-ordem-servico-descartada OR subscription_id:estoque-ordem-servico-finalizada OR subscription_id:orcamento-diagnostico-finalizado OR subscription_id:orcamento-ordem-servico-descartada OR subscription_id:orcamento-ordem-servico-finalizada OR subscription_id:ordem-servico-cobranca-gerada OR subscription_id:ordem-servico-estoque-em-falta OR subscription_id:ordem-servico-estoque-reservado OR subscription_id:ordem-servico-orcamento-falhou OR subscription_id:ordem-servico-orcamento-gerado OR subscription_id:ordem-servico-pagamento-confirmado OR subscription_id:ordem-servico-pagamento-recusado)} by {subscription_id}.as_count()",
                   "display_type": "bars"
                 }
               ]
@@ -192,6 +232,18 @@
                 {
                   "q": "sum:gcp.pubsub.topic.send_request_count{project_id:vcosta-fiap-tech-challenge AND (topic_id:cobranca-gerada OR topic_id:diagnostico-finalizado OR topic_id:estoque-em-falta OR topic_id:estoque-reservado OR topic_id:notificacoes OR topic_id:orcamento-falhou OR topic_id:orcamento-gerado OR topic_id:ordem-servico-aprovada OR topic_id:ordem-servico-descartada OR topic_id:ordem-servico-finalizada OR topic_id:pagamento-confirmado OR topic_id:pagamento-recusado)} by {topic_id}.as_count()",
                   "display_type": "bars"
+                }
+              ]
+            }
+          },
+          {
+            "definition": {
+              "title": "Mensagens retidas no tópico",
+              "type": "timeseries",
+              "requests": [
+                {
+                  "q": "avg:gcp.pubsub.topic.num_retained_messages{project_id:vcosta-fiap-tech-challenge AND (topic_id:cobranca-gerada OR topic_id:diagnostico-finalizado OR topic_id:estoque-em-falta OR topic_id:estoque-reservado OR topic_id:notificacoes OR topic_id:orcamento-falhou OR topic_id:orcamento-gerado OR topic_id:ordem-servico-aprovada OR topic_id:ordem-servico-descartada OR topic_id:ordem-servico-finalizada OR topic_id:pagamento-confirmado OR topic_id:pagamento-recusado)} by {topic_id}",
+                  "display_type": "line"
                 }
               ]
             }
@@ -244,7 +296,7 @@
         "widgets": [
           {
             "definition": {
-              "title": "CPU",
+              "title": "CPU utilization",
               "type": "timeseries",
               "requests": [
                 {
@@ -256,7 +308,7 @@
           },
           {
             "definition": {
-              "title": "Memory",
+              "title": "Memory utilization",
               "type": "timeseries",
               "requests": [
                 {
@@ -280,12 +332,71 @@
           },
           {
             "definition": {
-              "title": "Disk",
+              "title": "Disk utilization",
               "type": "timeseries",
               "requests": [
                 {
                   "q": "avg:gcp.cloudsql.database.disk.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:tech-challenge-pg}",
                   "display_type": "line"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Banco de dados (Firestore)",
+        "background_color": "gray",
+        "show_title": true,
+        "type": "group",
+        "layout_type": "ordered",
+        "widgets": [
+          {
+            "definition": {
+              "title": "API request count",
+              "type": "timeseries",
+              "requests": [
+                {
+                  "q": "sum:gcp.firestore.api.request_count{project_id:vcosta-fiap-tech-challenge AND (database_id:autenticacao OR database_id:orcamento)} by {database_id,api_method}.as_count()",
+                  "display_type": "bars"
+                }
+              ]
+            }
+          },
+          {
+            "definition": {
+              "title": "API request latency avg",
+              "type": "timeseries",
+              "requests": [
+                {
+                  "q": "avg:gcp.firestore.api.request_latencies.avg{project_id:vcosta-fiap-tech-challenge AND (database_id:autenticacao OR database_id:orcamento)} by {database_id,api_method}",
+                  "display_type": "line"
+                }
+              ]
+            }
+          },
+          {
+            "definition": {
+              "title": "Document reads",
+              "type": "timeseries",
+              "requests": [
+                {
+                  "q": "sum:gcp.firestore.document.read_count{project_id:vcosta-fiap-tech-challenge AND (database_id:autenticacao OR database_id:orcamento)} by {database_id}.as_count()",
+                  "display_type": "bars"
+                }
+              ]
+            }
+          },
+          {
+            "definition": {
+              "title": "Document writes",
+              "type": "timeseries",
+              "requests": [
+                {
+                  "q": "sum:gcp.firestore.document.write_count{project_id:vcosta-fiap-tech-challenge AND (database_id:autenticacao OR database_id:orcamento)} by {database_id}.as_count()",
+                  "display_type": "bars"
                 }
               ]
             }

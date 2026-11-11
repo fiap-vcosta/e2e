@@ -41,4 +41,6 @@ Com sidecars + propagação de trace no Pub/Sub, o service map deve mostrar o fl
 
 ## Grupos do dashboard
 
-Cores: monitores (purple), aplicação (vivid_blue), entrada (orange), saída (green), DLQ (pink), banco (gray), negócio (yellow). Widget de monitores: `manage_status` com `name:([ordem-servico]* OR … OR [saga]*)`.
+Cores por tipo (só grupos com conteúdo): **Monitores** (purple), **APIs / golden metrics** (vivid_blue), **Aplicação** (blue), **Eventos de entrada** (orange), **Eventos de saída** (green), **Dead-letter** (pink), **Banco** (gray — Cloud SQL ou Firestore), **Insights de negócio** (yellow).
+Monitores: `name:([ordem-servico]* OR … OR [saga]*)`. Inclui Cloud SQL e Firestore (`orcamento`, `autenticacao`).
+
