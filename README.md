@@ -76,7 +76,11 @@ Os cenários sobem catálogo/estoque via HTTP e exercitam:
 - pagamento recusado (stub GET `rejected` + nova cobrança automática);
 - descarte após `LiberadaParaExecucao`.
 
-Requestly do sistema e CI BDD entram em PRs seguintes desta seção.
+### CI
+
+Workflow [`ci.yml`](.github/workflows/ci.yml) (PR / push `main` / manual): WIF → pull AR → `compose up` → `dotnet test` → Job Summary + artifact `bdd-results` → `compose down -v`.
+
+Requestly do sistema entra em PR seguinte desta seção.
 
 ## Janela GCP (`demo-up` / `demo-down`)
 

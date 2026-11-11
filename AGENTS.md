@@ -19,6 +19,7 @@ Compose do sistema, testes de ponta a ponta (Reqnroll), collections HTTP e diagr
 | `wiremock/mappings/` | Fake Mercado Pago Orders (`MercadoPago__BaseUrl`) |
 | `tests/Bdd/` | Reqnroll (caminho feliz + compensações contra o compose) |
 | `e2e.sln` | Solution do BDD |
+| `.github/workflows/ci.yml` | WIF + compose AR + BDD + Job Summary |
 | `.github/workflows/demo-up.yml` / `demo-down.yml` | Orquestradores GCP |
 | `.github/workflows/demo-phase-*.yml` | Matrix por repo; dispara `tf-apply` / `tf-destroy` / `deploy` via PAT |
 | `scripts/gh-dispatch-wait.sh` | Dispara um workflow e espera o run (`POLL_SECONDS=20`) |
@@ -40,4 +41,4 @@ dotnet test tests/Bdd/E2e.Bdd.csproj -c Release
 # Na UI do repo e2e: Actions → demo-up / demo-down → Run workflow
 ```
 
-Requestly do sistema / CI BDD: partes seguintes da §13.
+Requestly do sistema: parte seguinte da §13.
