@@ -17,6 +17,8 @@ Compose do sistema, testes de ponta a ponta (Reqnroll), collections HTTP e diagr
 | `scripts/setup-local-jwt.sh` | Gera `.local/jwt` + `.env` |
 | `scripts/init-pubsub-emulator.sh` | Tópicos/subscriptions alinhados aos serviços |
 | `wiremock/mappings/` | Fake Mercado Pago Orders (`MercadoPago__BaseUrl`) |
+| `tests/Bdd/` | Reqnroll (caminho feliz da Saga contra o compose) |
+| `e2e.sln` | Solution do BDD |
 | `.github/workflows/demo-up.yml` / `demo-down.yml` | Orquestradores GCP |
 | `.github/workflows/demo-phase-*.yml` | Matrix por repo; dispara `tf-apply` / `tf-destroy` / `deploy` via PAT |
 | `scripts/gh-dispatch-wait.sh` | Dispara um workflow e espera o run (`POLL_SECONDS=20`) |
@@ -33,8 +35,9 @@ gcloud auth configure-docker us-central1-docker.pkg.dev
 ./scripts/compose.sh pull
 ./scripts/compose.sh up -d
 # health: curl localhost:8080–8084 …/health
+dotnet test tests/Bdd/E2e.Bdd.csproj -c Release
 
 # Na UI do repo e2e: Actions → demo-up / demo-down → Run workflow
 ```
 
-BDD Reqnroll / Requestly do sistema / CI BDD: ainda em entrega (partes seguintes da §13).
+Requestly do sistema / CI BDD / compensações: partes seguintes da §13.

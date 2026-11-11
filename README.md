@@ -63,7 +63,17 @@ Login staff (seed idempotente): `POST /autenticacao/login` com `admin` / `admin`
 # volume do Postgres: ./scripts/compose.sh down -v
 ```
 
-BDD Reqnroll e Requestly do sistema entram em PRs seguintes desta seção.
+### BDD Reqnroll (caminho feliz)
+
+Com o compose no ar:
+
+```bash
+dotnet test tests/Bdd/E2e.Bdd.csproj -c Release
+```
+
+O cenário sobe catálogo/estoque via HTTP, percorre a Saga até `AguardandoPagamento`, POSTa o webhook assinado (WireMock) e espera `Entregue`.
+
+Requestly do sistema e cenários de compensação entram em PRs seguintes desta seção.
 
 ## Janela GCP (`demo-up` / `demo-down`)
 
