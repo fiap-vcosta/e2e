@@ -1,12 +1,12 @@
 {
   "meta": {
     "version": "1.1.0",
-    "exportedAt": "2026-11-11T00:00:00.000Z",
+    "exportedAt": "2026-11-11T21:00:00.000Z",
     "exportedUsing": "Requestly API Client"
   },
   "records": [
     {
-      "id": "e2e10001-0000-4000-8000-000000000001",
+      "id": "c2e10001-0000-4000-8000-000000000001",
       "name": "e2e-sistema",
       "type": "collection",
       "parentId": null,
@@ -17,13 +17,13 @@
         }
       },
       "rank": "a0",
-      "description": "Fluxo do sistema pelos 5 prefixos. Environments: Docker (portas 8080–8084) e GCP-Gateway (https://vcosta-fiap.online). Rode 01-auth/login staff antes do catálogo. Collections por serviço continuam nos repos. Sequências da Saga: docs/saga.md."
+      "description": "Fluxo do sistema pelos 5 prefixos. Environments: Docker (portas 8080-8084) e GCP-Gateway (https://vcosta-fiap.online). Rode 01-auth/login staff antes do catalogo. Collections por servico continuam nos repos. Sequencias da Saga: docs/saga.md."
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000010",
+      "id": "c2e10001-0000-4000-8000-000000000002",
       "name": "00-health",
       "type": "collection",
-      "parentId": "e2e10001-0000-4000-8000-000000000001",
+      "parentId": "c2e10001-0000-4000-8000-000000000001",
       "deleted": false,
       "data": {
         "auth": {
@@ -31,13 +31,13 @@
         }
       },
       "rank": "a0",
-      "description": "Health dos cinco serviços (sem auth)."
+      "description": "Health dos cinco servicos (sem auth)."
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000010",
+      "id": "c2e10001-0000-4000-8000-000000000003",
       "name": "administrativo",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000010",
+      "parentId": "c2e10001-0000-4000-8000-000000000002",
       "deleted": false,
       "data": {
         "type": "http",
@@ -59,10 +59,10 @@
       "rank": "a0"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000011",
+      "id": "c2e10001-0000-4000-8000-000000000004",
       "name": "autenticacao",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000010",
+      "parentId": "c2e10001-0000-4000-8000-000000000002",
       "deleted": false,
       "data": {
         "type": "http",
@@ -84,10 +84,10 @@
       "rank": "a1"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000012",
+      "id": "c2e10001-0000-4000-8000-000000000005",
       "name": "estoque",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000010",
+      "parentId": "c2e10001-0000-4000-8000-000000000002",
       "deleted": false,
       "data": {
         "type": "http",
@@ -109,10 +109,10 @@
       "rank": "a2"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000013",
+      "id": "c2e10001-0000-4000-8000-000000000006",
       "name": "ordem-servico",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000010",
+      "parentId": "c2e10001-0000-4000-8000-000000000002",
       "deleted": false,
       "data": {
         "type": "http",
@@ -134,10 +134,10 @@
       "rank": "a3"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000014",
+      "id": "c2e10001-0000-4000-8000-000000000007",
       "name": "orcamento",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000010",
+      "parentId": "c2e10001-0000-4000-8000-000000000002",
       "deleted": false,
       "data": {
         "type": "http",
@@ -159,10 +159,10 @@
       "rank": "a4"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000020",
+      "id": "c2e10001-0000-4000-8000-000000000008",
       "name": "01-auth",
       "type": "collection",
-      "parentId": "e2e10001-0000-4000-8000-000000000001",
+      "parentId": "c2e10001-0000-4000-8000-000000000001",
       "deleted": false,
       "data": {
         "auth": {
@@ -173,10 +173,10 @@
       "description": "Login staff (admin/admin) e JWT cliente. Cadastre o cliente no administrativo antes do token cliente."
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000021",
+      "id": "c2e10001-0000-4000-8000-000000000009",
       "name": "POST login staff",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000020",
+      "parentId": "c2e10001-0000-4000-8000-000000000008",
       "deleted": false,
       "data": {
         "type": "http",
@@ -211,10 +211,10 @@
       "rank": "a0"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000022",
+      "id": "c2e10001-0000-4000-8000-00000000000a",
       "name": "GET jwks",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000020",
+      "parentId": "c2e10001-0000-4000-8000-000000000008",
       "deleted": false,
       "data": {
         "type": "http",
@@ -236,10 +236,10 @@
       "rank": "a1"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000023",
+      "id": "c2e10001-0000-4000-8000-00000000000b",
       "name": "POST clientes/token",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000020",
+      "parentId": "c2e10001-0000-4000-8000-000000000008",
       "deleted": false,
       "data": {
         "type": "http",
@@ -274,10 +274,10 @@
       "rank": "a2"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000030",
+      "id": "c2e10001-0000-4000-8000-00000000000c",
       "name": "02-administrativo",
       "type": "collection",
-      "parentId": "e2e10001-0000-4000-8000-000000000001",
+      "parentId": "c2e10001-0000-4000-8000-000000000001",
       "deleted": false,
       "data": {
         "auth": {
@@ -285,13 +285,13 @@
         }
       },
       "rank": "a2",
-      "description": "Catálogo (JWT staff)."
+      "description": "Catalogo (JWT staff)."
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000031",
+      "id": "c2e10001-0000-4000-8000-00000000000d",
       "name": "POST cliente",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000030",
+      "parentId": "c2e10001-0000-4000-8000-00000000000c",
       "deleted": false,
       "data": {
         "type": "http",
@@ -311,7 +311,7 @@
           "pathVariables": [],
           "body": {
             "contentType": "raw",
-            "raw": "{\n  \"nome\": \"João Silva\",\n  \"email\": \"joao.silva@email.com\",\n  \"tipoDocumento\": \"Cpf\",\n  \"documento\": \"{{documentoCliente}}\"\n}",
+            "raw": "{\n  \"nome\": \"Joao Silva\",\n  \"email\": \"joao.silva@email.com\",\n  \"tipoDocumento\": \"Cpf\",\n  \"documento\": \"{{documentoCliente}}\"\n}",
             "rawContentType": "application/json"
           },
           "contentType": "raw"
@@ -327,10 +327,10 @@
       "rank": "a0"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000032",
+      "id": "c2e10001-0000-4000-8000-00000000000e",
       "name": "POST veiculo",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000030",
+      "parentId": "c2e10001-0000-4000-8000-00000000000c",
       "deleted": false,
       "data": {
         "type": "http",
@@ -366,10 +366,10 @@
       "rank": "a1"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000033",
+      "id": "c2e10001-0000-4000-8000-00000000000f",
       "name": "POST servico",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000030",
+      "parentId": "c2e10001-0000-4000-8000-00000000000c",
       "deleted": false,
       "data": {
         "type": "http",
@@ -405,10 +405,10 @@
       "rank": "a2"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000040",
+      "id": "c2e10001-0000-4000-8000-000000000010",
       "name": "03-estoque",
       "type": "collection",
-      "parentId": "e2e10001-0000-4000-8000-000000000001",
+      "parentId": "c2e10001-0000-4000-8000-000000000001",
       "deleted": false,
       "data": {
         "auth": {
@@ -419,10 +419,10 @@
       "description": "Item de estoque (JWT staff)."
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000041",
+      "id": "c2e10001-0000-4000-8000-000000000011",
       "name": "POST item",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000040",
+      "parentId": "c2e10001-0000-4000-8000-000000000010",
       "deleted": false,
       "data": {
         "type": "http",
@@ -458,10 +458,10 @@
       "rank": "a0"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000042",
+      "id": "c2e10001-0000-4000-8000-000000000012",
       "name": "POST registrar-entrada",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000040",
+      "parentId": "c2e10001-0000-4000-8000-000000000010",
       "deleted": false,
       "data": {
         "type": "http",
@@ -494,10 +494,10 @@
       "rank": "a1"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000050",
+      "id": "c2e10001-0000-4000-8000-000000000013",
       "name": "04-ordem-servico",
       "type": "collection",
-      "parentId": "e2e10001-0000-4000-8000-000000000001",
+      "parentId": "c2e10001-0000-4000-8000-000000000001",
       "deleted": false,
       "data": {
         "auth": {
@@ -505,13 +505,13 @@
         }
       },
       "rank": "a4",
-      "description": "Staff: cria → diagnóstico → aprova → execução. Após finalizar diagnóstico, aguarde AguardandoAprovacao (Pub/Sub). Após aprovar, aguarde LiberadaParaExecucao."
+      "description": "Staff: cria -> diagnostico -> aprova -> execucao. Apos finalizar diagnostico, aguarde AguardandoAprovacao (Pub/Sub). Apos aprovar, aguarde LiberadaParaExecucao."
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000051",
+      "id": "c2e10001-0000-4000-8000-000000000014",
       "name": "POST ordem",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000050",
+      "parentId": "c2e10001-0000-4000-8000-000000000013",
       "deleted": false,
       "data": {
         "type": "http",
@@ -547,10 +547,10 @@
       "rank": "a0"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000052",
+      "id": "c2e10001-0000-4000-8000-000000000015",
       "name": "POST finalizar-diagnostico",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000050",
+      "parentId": "c2e10001-0000-4000-8000-000000000013",
       "deleted": false,
       "data": {
         "type": "http",
@@ -573,10 +573,10 @@
       "rank": "a1"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000053",
+      "id": "c2e10001-0000-4000-8000-000000000016",
       "name": "POST aprovar",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000050",
+      "parentId": "c2e10001-0000-4000-8000-000000000013",
       "deleted": false,
       "data": {
         "type": "http",
@@ -599,10 +599,10 @@
       "rank": "a2"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000054",
+      "id": "c2e10001-0000-4000-8000-000000000017",
       "name": "POST confirmar-execucao",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000050",
+      "parentId": "c2e10001-0000-4000-8000-000000000013",
       "deleted": false,
       "data": {
         "type": "http",
@@ -635,10 +635,10 @@
       "rank": "a3"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000055",
+      "id": "c2e10001-0000-4000-8000-000000000018",
       "name": "GET ordem",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000050",
+      "parentId": "c2e10001-0000-4000-8000-000000000013",
       "deleted": false,
       "data": {
         "type": "http",
@@ -661,10 +661,10 @@
       "rank": "a4"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000056",
+      "id": "c2e10001-0000-4000-8000-000000000019",
       "name": "POST descartar",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000050",
+      "parentId": "c2e10001-0000-4000-8000-000000000013",
       "deleted": false,
       "data": {
         "type": "http",
@@ -687,10 +687,10 @@
       "rank": "a5"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000060",
+      "id": "c2e10001-0000-4000-8000-00000000001a",
       "name": "05-cliente-aprovacao",
       "type": "collection",
-      "parentId": "e2e10001-0000-4000-8000-000000000001",
+      "parentId": "c2e10001-0000-4000-8000-000000000001",
       "deleted": false,
       "data": {
         "auth": {
@@ -698,13 +698,13 @@
         }
       },
       "rank": "a5",
-      "description": "JWT cliente + token opaco na query. Preencha tokenAprovacao (não vem na API; no compose: SELECT \"TokenAprovacao\" FROM \"OrdensServico\"). Rode 01-auth/POST clientes/token antes."
+      "description": "JWT cliente + token opaco na query. Preencha tokenAprovacao (nao vem na API; no compose: SELECT TokenAprovacao FROM OrdensServico). Rode 01-auth/POST clientes/token antes."
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000061",
+      "id": "c2e10001-0000-4000-8000-00000000001b",
       "name": "POST aprovar (cliente)",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000060",
+      "parentId": "c2e10001-0000-4000-8000-00000000001a",
       "deleted": false,
       "data": {
         "type": "http",
@@ -727,10 +727,10 @@
       "rank": "a0"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000062",
+      "id": "c2e10001-0000-4000-8000-00000000001c",
       "name": "POST rejeitar (cliente)",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000060",
+      "parentId": "c2e10001-0000-4000-8000-00000000001a",
       "deleted": false,
       "data": {
         "type": "http",
@@ -753,10 +753,10 @@
       "rank": "a1"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000070",
+      "id": "c2e10001-0000-4000-8000-00000000001d",
       "name": "06-orcamento",
       "type": "collection",
-      "parentId": "e2e10001-0000-4000-8000-000000000001",
+      "parentId": "c2e10001-0000-4000-8000-000000000001",
       "deleted": false,
       "data": {
         "auth": {
@@ -764,13 +764,13 @@
         }
       },
       "rank": "a6",
-      "description": "Webhook MP (preencha xSignature) e rebill staff após Pix expirado. No compose, o BDD assina o webhook; aqui o secret fica só na UI."
+      "description": "Webhook MP (preencha xSignature) e rebill staff apos Pix expirado. No compose, o BDD assina o webhook; aqui o secret fica so na UI."
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000071",
+      "id": "c2e10001-0000-4000-8000-00000000001e",
       "name": "POST webhook mercado-pago",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000070",
+      "parentId": "c2e10001-0000-4000-8000-00000000001d",
       "deleted": false,
       "data": {
         "type": "http",
@@ -816,10 +816,10 @@
       "rank": "a0"
     },
     {
-      "id": "e2e10001-0000-4000-8000-000000000072",
+      "id": "c2e10001-0000-4000-8000-00000000001f",
       "name": "POST nova cobranca",
       "type": "api",
-      "parentId": "e2e10001-0000-4000-8000-000000000070",
+      "parentId": "c2e10001-0000-4000-8000-00000000001d",
       "deleted": false,
       "data": {
         "type": "http",
@@ -844,7 +844,7 @@
   ],
   "environments": [
     {
-      "id": "e2e10001-0000-4000-8000-0000000000e1",
+      "id": "c2e10001-0000-4000-8000-0000000000e1",
       "name": "Docker",
       "variables": {
         "administrativoUrl": {
@@ -926,7 +926,7 @@
       }
     },
     {
-      "id": "e2e10001-0000-4000-8000-0000000000e2",
+      "id": "c2e10001-0000-4000-8000-0000000000e2",
       "name": "GCP-Gateway",
       "variables": {
         "administrativoUrl": {
