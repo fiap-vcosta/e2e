@@ -71,9 +71,12 @@ Com o compose no ar:
 dotnet test tests/Bdd/E2e.Bdd.csproj -c Release
 ```
 
-O cenário sobe catálogo/estoque via HTTP, percorre a Saga até `AguardandoPagamento`, POSTa o webhook assinado (WireMock) e espera `Entregue`.
+Os cenários sobem catálogo/estoque via HTTP e exercitam:
+- caminho feliz até `Entregue` (webhook aprovado no WireMock);
+- pagamento recusado (stub GET `rejected` + nova cobrança automática);
+- descarte após `LiberadaParaExecucao`.
 
-Requestly do sistema e cenários de compensação entram em PRs seguintes desta seção.
+Requestly do sistema e CI BDD entram em PRs seguintes desta seção.
 
 ## Janela GCP (`demo-up` / `demo-down`)
 

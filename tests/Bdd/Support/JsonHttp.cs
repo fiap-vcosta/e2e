@@ -1,6 +1,5 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
 
 namespace E2e.Bdd.Support;
@@ -62,59 +61,137 @@ public sealed class JsonHttp
     public Task<JsonElement> PostAsync(string url, object? body = null) =>
         SendAsync(HttpMethod.Post, url, body);
 
-    public async Task ResetWireMockRequestsAsync()
+    public async Task ResetWireMockAsync()
     {
-        using var request = new HttpRequestMessage(HttpMethod.Delete, $"{ServiceUrls.WireMock}/__admin/requests");
-        using var response = await _http.SendAsync(request);
-        response.EnsureSuccessStatusCode();
+        // Restaura stubs do volume (remove stubs dinâmicos) e limpa o journal.
+        using (var resetMappings = new HttpRequestMessage(
+                   HttpMethod.Post, $"{ServiceUrls.WireMock}/__admin/mappings/reset"))
+        using (var resetResponse = await _http.SendAsync(resetMappings))
+        {
+            resetResponse.EnsureSuccessStatusCode();
+        }
+
+        using var clearJournal = new HttpRequestMessage(
+            HttpMethod.Delete, $"{ServiceUrls.WireMock}/__admin/requests");
+        using var journalResponse = await _http.SendAsync(clearJournal);
+        journalResponse.EnsureSuccessStatusCode();
     }
 
-    public async Task<string> WaitForWireMockOrderIdAsync(TimeSpan timeout)
+    public async Task StubGetOrderStatusAsync(string orderId, string status, string statusDetail)
     {
-        var deadline = DateTime.UtcNow + timeout;
-        while (DateTime.UtcNow < deadline)
-        {
-            var journal = await GetAsync($"{ServiceUrls.WireMock}/__admin/requests");
-            if (journal.TryGetProperty("requests", out var requests)
-                && requests.ValueKind == JsonValueKind.Array)
+        await PostAsync(
+            $"{ServiceUrls.WireMock}/__admin/mappings",
+            new
             {
-                foreach (var entry in requests.EnumerateArray())
+                priority = 1,
+                request = new
                 {
-                    if (!entry.TryGetProperty("request", out var req))
+                    method = "GET",
+                    urlPath = $"/v1/orders/{orderId}"
+                },
+                response = new
+                {
+                    status = 200,
+                    headers = new Dictionary<string, string>
                     {
-                        continue;
-                    }
-
-                    var method = req.TryGetProperty("method", out var m) ? m.GetString() : null;
-                    var url = req.TryGetProperty("url", out var u) ? u.GetString() : null;
-                    if (!string.Equals(method, "POST", StringComparison.OrdinalIgnoreCase)
-                        || url is null
-                        || !url.Contains("/v1/orders", StringComparison.Ordinal)
-                        || url.Contains("/cancel", StringComparison.Ordinal))
+                        ["Content-Type"] = "application/json"
+                    },
+                    jsonBody = new
                     {
-                        continue;
-                    }
-
-                    if (entry.TryGetProperty("response", out var resp)
-                        && resp.TryGetProperty("body", out var bodyEl))
-                    {
-                        var bodyText = bodyEl.GetString();
-                        if (!string.IsNullOrWhiteSpace(bodyText))
+                        id = orderId,
+                        status,
+                        status_detail = statusDetail,
+                        transactions = new
                         {
-                            using var doc = JsonDocument.Parse(bodyText);
-                            if (doc.RootElement.TryGetProperty("id", out var id)
-                                && id.GetString() is { Length: > 0 } orderId)
+                            payments = new[]
                             {
-                                return orderId;
+                                new
+                                {
+                                    amount = "100.00",
+                                    payment_method = new
+                                    {
+                                        id = "pix",
+                                        type = "bank_transfer",
+                                        qr_code = "00020126e2e-fake-pix-qr",
+                                        ticket_url = "https://www.mercadopago.com.br/payments/e2e/ticket"
+                                    }
+                                }
                             }
                         }
                     }
                 }
+            });
+    }
+
+    public async Task<string> WaitForWireMockOrderIdAsync(TimeSpan timeout) =>
+        (await WaitForWireMockOrderIdsAsync(1, timeout))[0];
+
+    public async Task<IReadOnlyList<string>> WaitForWireMockOrderIdsAsync(int minCount, TimeSpan timeout)
+    {
+        var deadline = DateTime.UtcNow + timeout;
+        while (DateTime.UtcNow < deadline)
+        {
+            var ids = await ListWireMockOrderIdsAsync();
+            if (ids.Count >= minCount)
+            {
+                return ids;
             }
 
             await Task.Delay(500);
         }
 
-        throw new TimeoutException("WireMock não registrou POST /v1/orders a tempo.");
+        throw new TimeoutException(
+            $"WireMock não registrou {minCount} POST /v1/orders a tempo.");
+    }
+
+    public async Task<IReadOnlyList<string>> ListWireMockOrderIdsAsync()
+    {
+        var journal = await GetAsync($"{ServiceUrls.WireMock}/__admin/requests");
+        var ids = new List<string>();
+        if (!journal.TryGetProperty("requests", out var requests)
+            || requests.ValueKind != JsonValueKind.Array)
+        {
+            return ids;
+        }
+
+        foreach (var entry in requests.EnumerateArray())
+        {
+            if (!entry.TryGetProperty("request", out var req))
+            {
+                continue;
+            }
+
+            var method = req.TryGetProperty("method", out var m) ? m.GetString() : null;
+            var url = req.TryGetProperty("url", out var u) ? u.GetString() : null;
+            if (!string.Equals(method, "POST", StringComparison.OrdinalIgnoreCase)
+                || url is null
+                || !url.Contains("/v1/orders", StringComparison.Ordinal)
+                || url.Contains("/cancel", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (!entry.TryGetProperty("response", out var resp)
+                || !resp.TryGetProperty("body", out var bodyEl))
+            {
+                continue;
+            }
+
+            var bodyText = bodyEl.GetString();
+            if (string.IsNullOrWhiteSpace(bodyText))
+            {
+                continue;
+            }
+
+            using var doc = JsonDocument.Parse(bodyText);
+            if (doc.RootElement.TryGetProperty("id", out var id)
+                && id.GetString() is { Length: > 0 } orderId
+                && !ids.Contains(orderId, StringComparer.Ordinal))
+            {
+                ids.Add(orderId);
+            }
+        }
+
+        return ids;
     }
 }
