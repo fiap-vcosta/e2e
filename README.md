@@ -4,9 +4,11 @@ Compose do sistema, testes de ponta a ponta e collections HTTP. Este repositóri
 
 Contrato entre os serviços:
 
+- [Arquitetura](docs/arquitetura.md)
 - [Eventos](docs/eventos.md)
 - [Saga](docs/saga.md)
 - [HTTP](docs/contratos-http.md)
+- [Requestly do sistema](docs/requestly/)
 
 ## Compose local (imagens do Artifact Registry)
 
@@ -80,7 +82,9 @@ Os cenários sobem catálogo/estoque via HTTP e exercitam:
 
 Workflow [`ci.yml`](.github/workflows/ci.yml) (PR / push `main` / manual): WIF → pull AR → `compose up` → `dotnet test` → Job Summary + artifact `bdd-results` → `compose down -v`.
 
-Requestly do sistema entra em PR seguinte desta seção.
+### Requestly
+
+Collection do sistema (cinco prefixos) e environments **Docker** / **GCP-Gateway**: [`docs/requestly/`](docs/requestly/). Importar `sistema.requestly.json` no Requestly API Client.
 
 ## Janela GCP (`demo-up` / `demo-down`)
 

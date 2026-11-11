@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "version": "1.1.0",
+    "exportedAt": "2026-11-11T00:00:00.000Z",
+    "exportedUsing": "Requestly API Client"
+  },
+  "records": [],
+  "environments": [
+    {
+      "id": "e2e10001-0000-4000-8000-0000000000e2",
+      "name": "GCP-Gateway",
+      "variables": {
+        "administrativoUrl": {
+          "type": "string",
+          "syncValue": "https://vcosta-fiap.online"
+        },
+        "autenticacaoUrl": {
+          "type": "string",
+          "syncValue": "https://vcosta-fiap.online"
+        },
+        "estoqueUrl": {
+          "type": "string",
+          "syncValue": "https://vcosta-fiap.online"
+        },
+        "ordemServicoUrl": {
+          "type": "string",
+          "syncValue": "https://vcosta-fiap.online"
+        },
+        "orcamentoUrl": {
+          "type": "string",
+          "syncValue": "https://vcosta-fiap.online"
+        },
+        "token": {
+          "type": "secret",
+          "syncValue": ""
+        },
+        "tokenCliente": {
+          "type": "secret",
+          "syncValue": ""
+        },
+        "documentoCliente": {
+          "type": "string",
+          "syncValue": "86421537090"
+        },
+        "serviceAuthKey": {
+          "type": "secret",
+          "syncValue": ""
+        },
+        "clienteId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "veiculoId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "servicoId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "itemEstoqueId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "ordemServicoId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "servicoLinhaId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "tokenAprovacao": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "dataId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "xRequestId": {
+          "type": "string",
+          "syncValue": "req-requestly-1"
+        },
+        "xSignature": {
+          "type": "secret",
+          "syncValue": ""
+        }
+      }
+    }
+  ],
+  "packages": []
+}
