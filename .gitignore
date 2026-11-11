@@ -1,0 +1,24 @@
+# Env / secrets locais
+.env
+.local/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.user
+*.suo
+
+# .NET (BDD na parte 2+)
+bin/
+obj/
+TestResults/
+*.trx
+*.coverage
+coverage/
+
+# Docker
+postgres_data/

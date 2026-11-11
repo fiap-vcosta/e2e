@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPathPattern": "/v1/orders/[^/]+/cancel"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "transformers": ["response-template"],
+    "jsonBody": {
+      "id": "{{request.pathSegments.[2]}}",
+      "status": "cancelled"
+    }
+  }
+}

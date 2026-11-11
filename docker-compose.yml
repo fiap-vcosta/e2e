@@ -1,0 +1,207 @@
+name: tech-challenge-e2e
+
+x-jwt-validators: &jwt-validators
+  Jwt__Funcionario__Issuer: ${JWT_ISSUER:?JWT_ISSUER is required}
+  Jwt__Funcionario__Audience: ${JWT_AUDIENCE_FUNCIONARIO:?JWT_AUDIENCE_FUNCIONARIO is required}
+  Jwt__Funcionario__PublicKeyPem: ${JWT_PUBLIC_KEY_PEM:?JWT_PUBLIC_KEY_PEM is required}
+  Jwt__Funcionario__RequireHttpsMetadata: "false"
+  Jwt__Cliente__Issuer: ${JWT_ISSUER:?JWT_ISSUER is required}
+  Jwt__Cliente__Audience: ${JWT_AUDIENCE_CLIENTE:?JWT_AUDIENCE_CLIENTE is required}
+  Jwt__Cliente__PublicKeyPem: ${JWT_PUBLIC_KEY_PEM:?JWT_PUBLIC_KEY_PEM is required}
+  Jwt__Cliente__RequireHttpsMetadata: "false"
+
+x-dd-env: &dd-env
+  DD_ENV: e2e-local
+  DD_LOGS_INJECTION: "true"
+  DD_API_KEY: ${DD_API_KEY:-}
+  DD_SITE: ${DD_SITE:-datadoghq.com}
+  DD_AGENT_HOST: ${DD_AGENT_HOST:-127.0.0.1}
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-postgres.sh:/docker-entrypoint-initdb.d/01-init-databases.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:?POSTGRES_USER is required}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  firestore:
+    image: gcr.io/google.com/cloudsdktool/google-cloud-cli:emulators
+    command: >
+      gcloud beta emulators firestore start
+      --host-port=0.0.0.0:8080
+      --project=${FIRESTORE_PROJECT_ID:?FIRESTORE_PROJECT_ID is required}
+    ports:
+      - "8085:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/ || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  pubsub:
+    image: gcr.io/google.com/cloudsdktool/google-cloud-cli:emulators
+    command: >
+      gcloud beta emulators pubsub start
+      --host-port=0.0.0.0:8085
+      --project=${PUBSUB_PROJECT_ID:?PUBSUB_PROJECT_ID is required}
+    ports:
+      - "8086:8085"
+
+  pubsub-init:
+    image: gcr.io/google.com/cloudsdktool/google-cloud-cli:emulators
+    depends_on:
+      - pubsub
+    environment:
+      PUBSUB_EMULATOR_HOST: pubsub:8085
+      PUBSUB_PROJECT_ID: ${PUBSUB_PROJECT_ID:?PUBSUB_PROJECT_ID is required}
+      CLOUDSDK_CORE_PROJECT: ${PUBSUB_PROJECT_ID:?PUBSUB_PROJECT_ID is required}
+      CLOUDSDK_AUTH_DISABLE_CREDENTIALS: "true"
+    volumes:
+      - ./scripts/init-pubsub-emulator.sh:/init-pubsub-emulator.sh:ro
+    entrypoint: ["/bin/sh", "/init-pubsub-emulator.sh"]
+    restart: "no"
+
+  wiremock:
+    image: wiremock/wiremock:3.12.1
+    command: ["--global-response-templating", "--verbose"]
+    ports:
+      - "8089:8080"
+    volumes:
+      - ./wiremock/mappings:/home/wiremock/mappings:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/__admin/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  administrativo:
+    image: ${GCP_REGION:?}-docker.pkg.dev/${GCP_PROJECT_ID:?}/${GCP_AR_REPOSITORY:?}/administrativo-service:${IMAGE_TAG:-latest}
+    ports:
+      - "8080:8080"
+    environment:
+      <<: [*jwt-validators, *dd-env]
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:?ASPNETCORE_ENVIRONMENT is required}
+      ConnectionStrings__DefaultConnection: Host=postgres;Database=administrativo;Username=${POSTGRES_USER:?};Password=${POSTGRES_PASSWORD:?};Maximum Pool Size=15
+      ServiceAuth__Key: ${SERVICE_AUTH_KEY:?SERVICE_AUTH_KEY is required}
+      DD_SERVICE: administrativo-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  autenticacao:
+    image: ${GCP_REGION:?}-docker.pkg.dev/${GCP_PROJECT_ID:?}/${GCP_AR_REPOSITORY:?}/autenticacao-service:${IMAGE_TAG:-latest}
+    ports:
+      - "8081:8080"
+    environment:
+      <<: [*dd-env]
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:?ASPNETCORE_ENVIRONMENT is required}
+      FIRESTORE_EMULATOR_HOST: firestore:8080
+      Firestore__ProjectId: ${FIRESTORE_PROJECT_ID:?FIRESTORE_PROJECT_ID is required}
+      Firestore__DatabaseId: "(default)"
+      Jwt__SigningKeyPem: ${JWT_SIGNING_KEY_PEM:?JWT_SIGNING_KEY_PEM is required}
+      Jwt__KeyId: ${JWT_KEY_ID:-autenticacao-2026}
+      Jwt__Funcionario__Issuer: ${JWT_ISSUER:?JWT_ISSUER is required}
+      Jwt__Funcionario__Audience: ${JWT_AUDIENCE_FUNCIONARIO:?JWT_AUDIENCE_FUNCIONARIO is required}
+      Jwt__Cliente__Issuer: ${JWT_ISSUER:?JWT_ISSUER is required}
+      Jwt__Cliente__Audience: ${JWT_AUDIENCE_CLIENTE:?JWT_AUDIENCE_CLIENTE is required}
+      Administrativo__BaseUrl: http://administrativo:8080
+      ServiceAuth__Key: ${SERVICE_AUTH_KEY:?SERVICE_AUTH_KEY is required}
+      DD_SERVICE: autenticacao-service
+    depends_on:
+      firestore:
+        condition: service_healthy
+      administrativo:
+        condition: service_started
+
+  estoque:
+    image: ${GCP_REGION:?}-docker.pkg.dev/${GCP_PROJECT_ID:?}/${GCP_AR_REPOSITORY:?}/estoque-service:${IMAGE_TAG:-latest}
+    ports:
+      - "8082:8080"
+    environment:
+      <<: [*jwt-validators, *dd-env]
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:?ASPNETCORE_ENVIRONMENT is required}
+      ConnectionStrings__DefaultConnection: Host=postgres;Database=estoque;Username=${POSTGRES_USER:?};Password=${POSTGRES_PASSWORD:?};Maximum Pool Size=15
+      ServiceAuth__Key: ${SERVICE_AUTH_KEY:?SERVICE_AUTH_KEY is required}
+      PubSub__ProjectId: ${PUBSUB_PROJECT_ID:?PUBSUB_PROJECT_ID is required}
+      PubSub__UseInMemory: "false"
+      PubSub__EnableWorkers: "true"
+      PUBSUB_EMULATOR_HOST: pubsub:8085
+      DD_SERVICE: estoque-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pubsub-init:
+        condition: service_completed_successfully
+
+  ordem-servico:
+    image: ${GCP_REGION:?}-docker.pkg.dev/${GCP_PROJECT_ID:?}/${GCP_AR_REPOSITORY:?}/ordem-servico-service:${IMAGE_TAG:-latest}
+    ports:
+      - "8083:8080"
+    environment:
+      <<: [*jwt-validators, *dd-env]
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:?ASPNETCORE_ENVIRONMENT is required}
+      ConnectionStrings__DefaultConnection: Host=postgres;Database=ordem_servico;Username=${POSTGRES_USER:?};Password=${POSTGRES_PASSWORD:?};Maximum Pool Size=15
+      ServiceAuth__Key: ${SERVICE_AUTH_KEY:?SERVICE_AUTH_KEY is required}
+      Administrativo__BaseUrl: http://administrativo:8080
+      Estoque__BaseUrl: http://estoque:8080
+      PubSub__ProjectId: ${PUBSUB_PROJECT_ID:?PUBSUB_PROJECT_ID is required}
+      PubSub__UseInMemory: "false"
+      PubSub__EnableWorkers: "true"
+      PUBSUB_EMULATOR_HOST: pubsub:8085
+      DD_SERVICE: ordem-servico-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      administrativo:
+        condition: service_started
+      estoque:
+        condition: service_started
+      pubsub-init:
+        condition: service_completed_successfully
+
+  orcamento:
+    image: ${GCP_REGION:?}-docker.pkg.dev/${GCP_PROJECT_ID:?}/${GCP_AR_REPOSITORY:?}/orcamento-service:${IMAGE_TAG:-latest}
+    ports:
+      - "8084:8080"
+    environment:
+      <<: [*jwt-validators, *dd-env]
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:?ASPNETCORE_ENVIRONMENT is required}
+      FIRESTORE_EMULATOR_HOST: firestore:8080
+      Firestore__ProjectId: ${FIRESTORE_PROJECT_ID:?FIRESTORE_PROJECT_ID is required}
+      Firestore__DatabaseId: "(default)"
+      PubSub__ProjectId: ${PUBSUB_PROJECT_ID:?PUBSUB_PROJECT_ID is required}
+      PubSub__UseInMemory: "false"
+      PubSub__EnableWorkers: "true"
+      PUBSUB_EMULATOR_HOST: pubsub:8085
+      MercadoPago__AccessToken: ${MercadoPago__AccessToken:-TEST-e2e-token}
+      MercadoPago__WebhookSecret: ${MercadoPago__WebhookSecret:?MercadoPago__WebhookSecret is required}
+      MercadoPago__BaseUrl: http://wiremock:8080
+      MercadoPago__ExpirationTime: ${MercadoPago__ExpirationTime:-P1D}
+      DD_SERVICE: orcamento-service
+    depends_on:
+      firestore:
+        condition: service_healthy
+      pubsub-init:
+        condition: service_completed_successfully
+      wiremock:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
