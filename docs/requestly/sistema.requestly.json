@@ -1,0 +1,1012 @@
+{
+  "meta": {
+    "version": "1.1.0",
+    "exportedAt": "2026-11-11T21:00:00.000Z",
+    "exportedUsing": "Requestly API Client"
+  },
+  "records": [
+    {
+      "id": "c2e10001-0000-4000-8000-000000000001",
+      "name": "e2e-sistema",
+      "type": "collection",
+      "parentId": null,
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a0",
+      "description": "Fluxo do sistema pelos 5 prefixos. Environments: Docker (portas 8080-8084) e GCP-Gateway (https://vcosta-fiap.online). Rode 01-auth/login staff antes do catalogo. Collections por servico continuam nos repos. Sequencias da Saga: docs/saga.md."
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000002",
+      "name": "00-health",
+      "type": "collection",
+      "parentId": "c2e10001-0000-4000-8000-000000000001",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a0",
+      "description": "Health dos cinco servicos (sem auth)."
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000003",
+      "name": "administrativo",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000002",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/health",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a0"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000004",
+      "name": "autenticacao",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000002",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{autenticacaoUrl}}/autenticacao/health",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a1"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000005",
+      "name": "estoque",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000002",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{estoqueUrl}}/estoque/health",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a2"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000006",
+      "name": "ordem-servico",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000002",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/health",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a3"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000007",
+      "name": "orcamento",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000002",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{orcamentoUrl}}/orcamento/health",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a4"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000008",
+      "name": "01-auth",
+      "type": "collection",
+      "parentId": "c2e10001-0000-4000-8000-000000000001",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a1",
+      "description": "Login staff (admin/admin) e JWT cliente. Cadastre o cliente no administrativo antes do token cliente."
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000009",
+      "name": "POST login staff",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000008",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{autenticacaoUrl}}/autenticacao/login",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"login\": \"admin\",\n  \"senha\": \"admin\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "postResponse": "var j = rq.response.json(); if (j && j.token) { rq.environment.set(\"token\", j.token); }"
+        }
+      },
+      "rank": "a0"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-00000000000a",
+      "name": "GET jwks",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000008",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{autenticacaoUrl}}/autenticacao/.well-known/jwks.json",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a1"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-00000000000b",
+      "name": "POST clientes/token",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000008",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{autenticacaoUrl}}/autenticacao/clientes/token",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"documento\": \"{{documentoCliente}}\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "postResponse": "var j = rq.response.json(); if (j && j.token) { rq.environment.set(\"tokenCliente\", j.token); }"
+        }
+      },
+      "rank": "a2"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-00000000000c",
+      "name": "02-administrativo",
+      "type": "collection",
+      "parentId": "c2e10001-0000-4000-8000-000000000001",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a2",
+      "description": "Catalogo (JWT staff)."
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-00000000000d",
+      "name": "POST cliente",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-00000000000c",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/clientes",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"nome\": \"Joao Silva\",\n  \"email\": \"joao.silva@email.com\",\n  \"tipoDocumento\": \"Cpf\",\n  \"documento\": \"{{documentoCliente}}\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "var j = rq.response.json(); if (j && j.id) { rq.environment.set(\"clienteId\", String(j.id)); }"
+        }
+      },
+      "rank": "a0"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-00000000000e",
+      "name": "POST veiculo",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-00000000000c",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/veiculos",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"placa\": \"ABC1D23\",\n  \"idCliente\": {{clienteId}},\n  \"modelo\": \"Onix\",\n  \"marca\": \"Chevrolet\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "var j = rq.response.json(); if (j && j.id) { rq.environment.set(\"veiculoId\", String(j.id)); }"
+        }
+      },
+      "rank": "a1"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-00000000000f",
+      "name": "POST servico",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-00000000000c",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/servicos",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"codigo\": \"MTR-001\",\n  \"nome\": \"Troca de oleo\",\n  \"precoPadrao\": 120.0,\n  \"ativo\": true\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "var j = rq.response.json(); if (j && j.id) { rq.environment.set(\"servicoId\", String(j.id)); }"
+        }
+      },
+      "rank": "a2"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000010",
+      "name": "03-estoque",
+      "type": "collection",
+      "parentId": "c2e10001-0000-4000-8000-000000000001",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a3",
+      "description": "Item de estoque (JWT staff)."
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000011",
+      "name": "POST item",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000010",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{estoqueUrl}}/estoque/itens",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"codigo\": \"FIL-001\",\n  \"tipo\": \"Peca\",\n  \"nome\": \"Filtro de oleo\",\n  \"unidadeMedida\": \"Unidade\",\n  \"precoVenda\": 45.9,\n  \"saldo\": 10,\n  \"saldoReservado\": 0\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "var j = rq.response.json(); if (j && j.id) { rq.environment.set(\"itemEstoqueId\", String(j.id)); }"
+        }
+      },
+      "rank": "a0"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000012",
+      "name": "POST registrar-entrada",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000010",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{estoqueUrl}}/estoque/itens/{{itemEstoqueId}}/registrar-entrada",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"quantidade\": 5\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        }
+      },
+      "rank": "a1"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000013",
+      "name": "04-ordem-servico",
+      "type": "collection",
+      "parentId": "c2e10001-0000-4000-8000-000000000001",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a4",
+      "description": "Staff: cria -> diagnostico -> aprova -> execucao. Apos finalizar diagnostico, aguarde AguardandoAprovacao (Pub/Sub). Apos aprovar, aguarde LiberadaParaExecucao."
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000014",
+      "name": "POST ordem",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000013",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"idVeiculo\": {{veiculoId}},\n  \"servicos\": [\n    {\n      \"idServico\": {{servicoId}},\n      \"valorCobrado\": 150,\n      \"itensNecessarios\": [\n        { \"idItemEstoque\": {{itemEstoqueId}}, \"quantidade\": 1 }\n      ]\n    }\n  ]\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "var j = rq.response.json(); if (j && j.id) { rq.environment.set(\"ordemServicoId\", String(j.id)); } if (j && j.servicos && j.servicos[0] && j.servicos[0].id) { rq.environment.set(\"servicoLinhaId\", String(j.servicos[0].id)); }"
+        }
+      },
+      "rank": "a0"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000015",
+      "name": "POST finalizar-diagnostico",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000013",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/finalizar-diagnostico",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        }
+      },
+      "rank": "a1"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000016",
+      "name": "POST aprovar",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000013",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/aprovar",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        }
+      },
+      "rank": "a2"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000017",
+      "name": "POST confirmar-execucao",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000013",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/confirmar-execucao",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"servicosExecutados\": [\n    {\n      \"idServico\": {{servicoLinhaId}},\n      \"iniciadoEm\": \"2026-11-11T10:00:00Z\",\n      \"finalizadoEm\": \"2026-11-11T12:00:00Z\"\n    }\n  ]\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        }
+      },
+      "rank": "a3"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000018",
+      "name": "GET ordem",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000013",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        }
+      },
+      "rank": "a4"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-000000000019",
+      "name": "POST descartar",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-000000000013",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/descartar",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        }
+      },
+      "rank": "a5"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-00000000001a",
+      "name": "05-cliente-aprovacao",
+      "type": "collection",
+      "parentId": "c2e10001-0000-4000-8000-000000000001",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a5",
+      "description": "JWT cliente + token opaco na query. Preencha tokenAprovacao (nao vem na API; no compose: SELECT TokenAprovacao FROM OrdensServico). Rode 01-auth/POST clientes/token antes."
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-00000000001b",
+      "name": "POST aprovar (cliente)",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-00000000001a",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/aprovar?token={{tokenAprovacao}}",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{tokenCliente}}"
+        }
+      },
+      "rank": "a0"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-00000000001c",
+      "name": "POST rejeitar (cliente)",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-00000000001a",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/rejeitar?token={{tokenAprovacao}}",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{tokenCliente}}"
+        }
+      },
+      "rank": "a1"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-00000000001d",
+      "name": "06-orcamento",
+      "type": "collection",
+      "parentId": "c2e10001-0000-4000-8000-000000000001",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a6",
+      "description": "Webhook MP (preencha xSignature) e rebill staff apos Pix expirado. No compose, o BDD assina o webhook; aqui o secret fica so na UI."
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-00000000001e",
+      "name": "POST webhook mercado-pago",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-00000000001d",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{orcamentoUrl}}/orcamento/webhook/mercado-pago?data.id={{dataId}}&type=order",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            },
+            {
+              "id": 2,
+              "key": "x-signature",
+              "value": "{{xSignature}}",
+              "isEnabled": true,
+              "description": ""
+            },
+            {
+              "id": 3,
+              "key": "x-request-id",
+              "value": "{{xRequestId}}",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"action\": \"order.processed\",\n  \"data\": { \"id\": \"{{dataId}}\" }\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a0"
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-00000000001f",
+      "name": "POST nova cobranca",
+      "type": "api",
+      "parentId": "c2e10001-0000-4000-8000-00000000001d",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{orcamentoUrl}}/orcamento/ordens/{{ordemServicoId}}/cobrancas",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        }
+      },
+      "rank": "a1"
+    }
+  ],
+  "environments": [
+    {
+      "id": "c2e10001-0000-4000-8000-0000000000e1",
+      "name": "Docker",
+      "variables": {
+        "administrativoUrl": {
+          "type": "string",
+          "syncValue": "http://localhost:8080"
+        },
+        "autenticacaoUrl": {
+          "type": "string",
+          "syncValue": "http://localhost:8081"
+        },
+        "estoqueUrl": {
+          "type": "string",
+          "syncValue": "http://localhost:8082"
+        },
+        "ordemServicoUrl": {
+          "type": "string",
+          "syncValue": "http://localhost:8083"
+        },
+        "orcamentoUrl": {
+          "type": "string",
+          "syncValue": "http://localhost:8084"
+        },
+        "token": {
+          "type": "secret",
+          "syncValue": ""
+        },
+        "tokenCliente": {
+          "type": "secret",
+          "syncValue": ""
+        },
+        "documentoCliente": {
+          "type": "string",
+          "syncValue": "86421537090"
+        },
+        "serviceAuthKey": {
+          "type": "secret",
+          "syncValue": "local-service-auth-key-change-me"
+        },
+        "clienteId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "veiculoId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "servicoId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "itemEstoqueId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "ordemServicoId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "servicoLinhaId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "tokenAprovacao": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "dataId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "xRequestId": {
+          "type": "string",
+          "syncValue": "req-requestly-1"
+        },
+        "xSignature": {
+          "type": "secret",
+          "syncValue": ""
+        }
+      }
+    },
+    {
+      "id": "c2e10001-0000-4000-8000-0000000000e2",
+      "name": "GCP-Gateway",
+      "variables": {
+        "administrativoUrl": {
+          "type": "string",
+          "syncValue": "https://vcosta-fiap.online"
+        },
+        "autenticacaoUrl": {
+          "type": "string",
+          "syncValue": "https://vcosta-fiap.online"
+        },
+        "estoqueUrl": {
+          "type": "string",
+          "syncValue": "https://vcosta-fiap.online"
+        },
+        "ordemServicoUrl": {
+          "type": "string",
+          "syncValue": "https://vcosta-fiap.online"
+        },
+        "orcamentoUrl": {
+          "type": "string",
+          "syncValue": "https://vcosta-fiap.online"
+        },
+        "token": {
+          "type": "secret",
+          "syncValue": ""
+        },
+        "tokenCliente": {
+          "type": "secret",
+          "syncValue": ""
+        },
+        "documentoCliente": {
+          "type": "string",
+          "syncValue": "86421537090"
+        },
+        "serviceAuthKey": {
+          "type": "secret",
+          "syncValue": ""
+        },
+        "clienteId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "veiculoId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "servicoId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "itemEstoqueId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "ordemServicoId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "servicoLinhaId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "tokenAprovacao": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "dataId": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "xRequestId": {
+          "type": "string",
+          "syncValue": "req-requestly-1"
+        },
+        "xSignature": {
+          "type": "secret",
+          "syncValue": ""
+        }
+      }
+    }
+  ],
+  "packages": []
+}

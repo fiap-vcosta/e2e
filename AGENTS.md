@@ -23,6 +23,8 @@ Compose do sistema, testes de ponta a ponta (Reqnroll), collections HTTP e diagr
 | `.github/workflows/demo-up.yml` / `demo-down.yml` | Orquestradores GCP |
 | `.github/workflows/demo-phase-*.yml` | Matrix por repo; dispara `tf-apply` / `tf-destroy` / `deploy` via PAT |
 | `scripts/gh-dispatch-wait.sh` | Dispara um workflow e espera o run (`POLL_SECONDS=20`) |
+| `docs/requestly/` | Collection exploratória + suites e2e Requestly; environments Docker / GCP-Gateway |
+| `docs/arquitetura.md` | Diagrama Mermaid de componentes (GCP + compose); Saga em `docs/saga.md` |
 
 ## Fora de escopo
 
@@ -40,5 +42,3 @@ dotnet test tests/Bdd/E2e.Bdd.csproj -c Release
 
 # Na UI do repo e2e: Actions → demo-up / demo-down → Run workflow
 ```
-
-Requestly do sistema: parte seguinte da §13.
