@@ -6,16 +6,15 @@ Artefatos para a janela de demo na org Datadog (`DD_SITE` = `us5.datadoghq.com`)
 
 | Arquivo | Uso |
 |---------|-----|
-| [`dashboard-saga-demo.json`](dashboard-saga-demo.json) | Dashboard ordered: APM p95/erros/hits nos 5 serviços, transições de OS, compensação, nacks, DLQ Pub/Sub, Cloud SQL |
-| [`monitor-dlq-pubsub.json`](monitor-dlq-pubsub.json) | Alert se `dead_letter_message_count` > 0 nas 13 subscriptions com política DLQ |
-| [`monitor-pubsub-nack.json`](monitor-pubsub-nack.json) | Log alert: `Failed to process Pub/Sub message` (`env:prod`) |
-| [`monitor-orcamento-persistencia.json`](monitor-orcamento-persistencia.json) | Log alert: `Falha ao gravar orçamento` em `orcamento-service` |
+| [`dashboard-saga-demo.json`](dashboard-saga-demo.json) | Dashboard geral da Saga (APM, Pub/Sub, Cloud SQL, Firestore, negócio) |
+
+Monitores ficam nos **repos de cada serviço** (dono do consume/DLQ/nack, do publish e do domínio). Exemplos: `ordem-servico-service`, `estoque-service` e `orcamento-service` em `docs/datadog/monitor-*.json`.
 
 ## Importar (site `us5`)
 
 1. Abra [https://us5.datadoghq.com](https://us5.datadoghq.com).
-2. **Dashboards** → **New Dashboard** → **Import dashboard JSON** → cole [`dashboard-saga-demo.json`](dashboard-saga-demo.json).
-3. **Monitors** → **New Monitor** (ou API/import) a partir de cada `monitor-*.json`.
+2. Importe os `monitor-*.json` de **cada serviço** (e só depois o dashboard da Saga, se quiser ver o `manage_status` preenchido).
+3. **Dashboards** → **New Dashboard** → **Import dashboard JSON** → cole [`dashboard-saga-demo.json`](dashboard-saga-demo.json).
 4. **Não** versionar e-mail de notificação no Git: configure `@…` / canais na UI da conta estudante.
 
 ## Integração GCP
@@ -23,13 +22,13 @@ Artefatos para a janela de demo na org Datadog (`DD_SITE` = `us5.datadoghq.com`)
 Widgets de **Pub/Sub DLQ** e **Cloud SQL** exigem a integração **Google Cloud Platform** no Datadog, com o projeto `vcosta-fiap-tech-challenge` conectado (roles de leitura de métricas).
 
 - Cloud SQL: `database_id:vcosta-fiap-tech-challenge:tech-challenge-pg`
-- DLQ: monitor usa `gcp.pubsub.subscription.dead_letter_message_count` nas subscriptions de consumo (tópico destino `${subscription}-dlq`)
+- DLQ: monitores por serviço consumidor usam `gcp.pubsub.subscription.dead_letter_message_count` (tópico destino `${subscription}-dlq`)
 
 Limite a coleta a tags/métricas necessárias — sidecars Datadog + nós GKE contam no plano estudante. HPA dos serviços com `maxReplicas=2` para não estourar hosts fora do teste de carga.
 
 ## Após `demo-down`
 
-Mute (ou pause) os monitores desta pasta quando a janela cair — métricas GCP/APM somem e alertas ficam ruidosos. Mute também os monitores antigos `service:api` do monólito se ainda existirem na org.
+Mute (ou pause) os monitores dos serviços quando a janela cair — métricas GCP/APM somem e alertas ficam ruidosos. Mute também os monitores antigos `service:api` do monólito se ainda existirem na org.
 
 ## APM / service map
 
