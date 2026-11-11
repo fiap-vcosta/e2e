@@ -38,3 +38,7 @@ Com sidecars + propagação de trace no Pub/Sub, o service map deve mostrar o fl
 - APM services: filtre `env:prod` e os nomes `ordem-servico-service`, `estoque-service`, `orcamento-service`, `administrativo-service`, `autenticacao-service`
 - Service map: [APM → Service Map](https://us5.datadoghq.com/apm/map) (site `us5`)
 - Logs ↔ traces: logs JSON com `dd.trace_id` → **View Trace**
+
+## Grupos do dashboard
+
+Cores: monitores (purple), aplicação (vivid_blue), entrada (orange), saída (green), DLQ (pink), banco (gray), negócio (yellow). Widget de monitores: `manage_status` com `name:([ordem-servico]* OR … OR [saga]*)`.
