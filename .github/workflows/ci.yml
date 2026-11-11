@@ -1,0 +1,151 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: e2e-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  bdd:
+    name: Compose + BDD Reqnroll
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check required org vars
+        env:
+          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+          GCP_REGION: ${{ vars.GCP_REGION }}
+          GCP_AR_REPOSITORY: ${{ vars.GCP_AR_REPOSITORY }}
+          GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          GCP_SERVICE_ACCOUNT_EMAIL: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+        run: |
+          missing=()
+          for name in GCP_PROJECT_ID GCP_REGION GCP_AR_REPOSITORY GCP_WORKLOAD_IDENTITY_PROVIDER GCP_SERVICE_ACCOUNT_EMAIL; do
+            [[ -n "${!name}" ]] || missing+=("$name")
+          done
+          if (( ${#missing[@]} > 0 )); then
+            echo "org vars faltando: ${missing[*]}" >&2
+            exit 1
+          fi
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker "${{ vars.GCP_REGION }}-docker.pkg.dev" --quiet
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Prepare local JWT and .env
+        env:
+          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+          GCP_REGION: ${{ vars.GCP_REGION }}
+          GCP_AR_REPOSITORY: ${{ vars.GCP_AR_REPOSITORY }}
+        run: ./scripts/setup-local-jwt.sh
+
+      - name: Pull images
+        run: ./scripts/compose.sh pull
+
+      - name: Compose up
+        run: ./scripts/compose.sh up -d --wait --wait-timeout 180
+
+      - name: Wait health endpoints
+        run: |
+          set -euo pipefail
+          endpoints=(
+            "http://localhost:8080/administrativo/health"
+            "http://localhost:8081/autenticacao/health"
+            "http://localhost:8082/estoque/health"
+            "http://localhost:8083/ordem-servico/health"
+            "http://localhost:8084/orcamento/health"
+          )
+          for url in "${endpoints[@]}"; do
+            ok=0
+            for _ in $(seq 1 60); do
+              if curl -fsS -m 3 "$url" >/dev/null; then
+                echo "OK $url"
+                ok=1
+                break
+              fi
+              sleep 2
+            done
+            [[ "$ok" -eq 1 ]] || { echo "timeout $url" >&2; exit 1; }
+          done
+
+      - name: Run BDD
+        id: bdd
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p TestResults
+          set +e
+          dotnet test tests/Bdd/E2e.Bdd.csproj -c Release \
+            --logger "trx;LogFileName=bdd.trx" \
+            --logger "console;verbosity=detailed" \
+            --results-directory TestResults \
+            | tee TestResults/bdd-console.txt
+          code=${PIPESTATUS[0]}
+          set -e
+          exit "$code"
+
+      - name: BDD Job Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## BDD e2e (compose + Reqnroll)"
+            echo
+            echo "- Runner: \`${{ runner.os }}\`"
+            echo "- Artifact Registry: \`${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_AR_REPOSITORY }}\`"
+            echo "- Image tag: \`latest\` (override local via \`IMAGE_TAG\`)"
+            echo "- Result: **${{ job.status }}**"
+            echo
+            if [[ -f TestResults/bdd-console.txt ]]; then
+              passed="$(grep -cE '^  Passed ' TestResults/bdd-console.txt || true)"
+              failed="$(grep -cE '^  Failed ' TestResults/bdd-console.txt || true)"
+              echo "- Scenarios: ${passed} passed / ${failed} failed (linhas do logger)"
+              echo
+            fi
+            echo "### Console (tail)"
+            echo '```'
+            if [[ -f TestResults/bdd-console.txt ]]; then
+              tail -n 120 TestResults/bdd-console.txt
+            else
+              echo "(sem saída capturada)"
+            fi
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload BDD logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bdd-results
+          path: TestResults/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Compose down
+        if: always()
+        run: ./scripts/compose.sh down -v

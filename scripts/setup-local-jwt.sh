@@ -19,13 +19,18 @@ fi
 
 env_file="$root/.env"
 if [[ ! -f "$env_file" ]]; then
-  cat >"$env_file" <<'EOF'
+  GCP_REGION="${GCP_REGION:-us-central1}"
+  GCP_PROJECT_ID="${GCP_PROJECT_ID:-vcosta-fiap-tech-challenge}"
+  GCP_AR_REPOSITORY="${GCP_AR_REPOSITORY:-tech-challenge}"
+  IMAGE_TAG="${IMAGE_TAG:-latest}"
+
+  cat >"$env_file" <<EOF
 ASPNETCORE_ENVIRONMENT=Development
 
-GCP_REGION=us-central1
-GCP_PROJECT_ID=vcosta-fiap-tech-challenge
-GCP_AR_REPOSITORY=tech-challenge
-IMAGE_TAG=latest
+GCP_REGION=${GCP_REGION}
+GCP_PROJECT_ID=${GCP_PROJECT_ID}
+GCP_AR_REPOSITORY=${GCP_AR_REPOSITORY}
+IMAGE_TAG=${IMAGE_TAG}
 
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
@@ -54,4 +59,4 @@ else
 fi
 
 echo "Use ./scripts/compose.sh up -d (exporta JWT_*.pem a partir de .local/jwt)."
-echo "Antes: gcloud auth configure-docker \${GCP_REGION}-docker.pkg.dev"
+echo "Antes: gcloud auth configure-docker \${GCP_REGION:-us-central1}-docker.pkg.dev"
