@@ -1,0 +1,527 @@
+{
+  "title": "Tech Challenge — Saga (demo)",
+  "description": "Dashboard da janela de demo (Saga): latência/erros/hits APM nos 5 serviços, transições de OS (logs), compensações, nacks Pub/Sub, DLQ e Cloud SQL (integração GCP).",
+  "layout_type": "ordered",
+  "reflow_type": "auto",
+  "widgets": [
+    {
+      "definition": {
+        "title": "Latência p95 APM por serviço",
+        "type": "timeseries",
+        "requests": [
+          {
+            "q": "p95:trace.aspnet_core.request{service:ordem-servico-service,env:prod}",
+            "display_type": "line"
+          },
+          {
+            "q": "p95:trace.aspnet_core.request{service:estoque-service,env:prod}",
+            "display_type": "line"
+          },
+          {
+            "q": "p95:trace.aspnet_core.request{service:orcamento-service,env:prod}",
+            "display_type": "line"
+          },
+          {
+            "q": "p95:trace.aspnet_core.request{service:administrativo-service,env:prod}",
+            "display_type": "line"
+          },
+          {
+            "q": "p95:trace.aspnet_core.request{service:autenticacao-service,env:prod}",
+            "display_type": "line"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Erros HTTP APM por serviço",
+        "type": "timeseries",
+        "requests": [
+          {
+            "q": "sum:trace.aspnet_core.request.errors{service:ordem-servico-service,env:prod}.as_count()",
+            "display_type": "bars"
+          },
+          {
+            "q": "sum:trace.aspnet_core.request.errors{service:estoque-service,env:prod}.as_count()",
+            "display_type": "bars"
+          },
+          {
+            "q": "sum:trace.aspnet_core.request.errors{service:orcamento-service,env:prod}.as_count()",
+            "display_type": "bars"
+          },
+          {
+            "q": "sum:trace.aspnet_core.request.errors{service:administrativo-service,env:prod}.as_count()",
+            "display_type": "bars"
+          },
+          {
+            "q": "sum:trace.aspnet_core.request.errors{service:autenticacao-service,env:prod}.as_count()",
+            "display_type": "bars"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Hits HTTP APM por serviço",
+        "type": "timeseries",
+        "requests": [
+          {
+            "q": "sum:trace.aspnet_core.request.hits{service:ordem-servico-service,env:prod}.as_count()",
+            "display_type": "bars"
+          },
+          {
+            "q": "sum:trace.aspnet_core.request.hits{service:estoque-service,env:prod}.as_count()",
+            "display_type": "bars"
+          },
+          {
+            "q": "sum:trace.aspnet_core.request.hits{service:orcamento-service,env:prod}.as_count()",
+            "display_type": "bars"
+          },
+          {
+            "q": "sum:trace.aspnet_core.request.hits{service:administrativo-service,env:prod}.as_count()",
+            "display_type": "bars"
+          },
+          {
+            "q": "sum:trace.aspnet_core.request.hits{service:autenticacao-service,env:prod}.as_count()",
+            "display_type": "bars"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Transições OS (todas)",
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "display_type": "bars",
+            "queries": [
+              {
+                "data_source": "logs",
+                "name": "query1",
+                "indexes": [
+                  "*"
+                ],
+                "compute": {
+                  "aggregation": "count"
+                },
+                "group_by": [],
+                "search": {
+                  "query": "service:ordem-servico-service env:prod \"movida para o status\""
+                }
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Transições — AguardandoOrcamento",
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "display_type": "bars",
+            "queries": [
+              {
+                "data_source": "logs",
+                "name": "query1",
+                "indexes": [
+                  "*"
+                ],
+                "compute": {
+                  "aggregation": "count"
+                },
+                "group_by": [],
+                "search": {
+                  "query": "service:ordem-servico-service env:prod \"movida para o status AguardandoOrcamento\""
+                }
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Transições — AguardandoAprovacao",
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "display_type": "bars",
+            "queries": [
+              {
+                "data_source": "logs",
+                "name": "query1",
+                "indexes": [
+                  "*"
+                ],
+                "compute": {
+                  "aggregation": "count"
+                },
+                "group_by": [],
+                "search": {
+                  "query": "service:ordem-servico-service env:prod \"movida para o status AguardandoAprovacao\""
+                }
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Transições — ChecandoEstoque",
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "display_type": "bars",
+            "queries": [
+              {
+                "data_source": "logs",
+                "name": "query1",
+                "indexes": [
+                  "*"
+                ],
+                "compute": {
+                  "aggregation": "count"
+                },
+                "group_by": [],
+                "search": {
+                  "query": "service:ordem-servico-service env:prod \"movida para o status ChecandoEstoque\""
+                }
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Transições — LiberadaParaExecucao",
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "display_type": "bars",
+            "queries": [
+              {
+                "data_source": "logs",
+                "name": "query1",
+                "indexes": [
+                  "*"
+                ],
+                "compute": {
+                  "aggregation": "count"
+                },
+                "group_by": [],
+                "search": {
+                  "query": "service:ordem-servico-service env:prod \"movida para o status LiberadaParaExecucao\""
+                }
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Transições — Finalizada",
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "display_type": "bars",
+            "queries": [
+              {
+                "data_source": "logs",
+                "name": "query1",
+                "indexes": [
+                  "*"
+                ],
+                "compute": {
+                  "aggregation": "count"
+                },
+                "group_by": [],
+                "search": {
+                  "query": "service:ordem-servico-service env:prod \"movida para o status Finalizada\""
+                }
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Transições — AguardandoPagamento",
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "display_type": "bars",
+            "queries": [
+              {
+                "data_source": "logs",
+                "name": "query1",
+                "indexes": [
+                  "*"
+                ],
+                "compute": {
+                  "aggregation": "count"
+                },
+                "group_by": [],
+                "search": {
+                  "query": "service:ordem-servico-service env:prod \"movida para o status AguardandoPagamento\""
+                }
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Transições — Entregue",
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "display_type": "bars",
+            "queries": [
+              {
+                "data_source": "logs",
+                "name": "query1",
+                "indexes": [
+                  "*"
+                ],
+                "compute": {
+                  "aggregation": "count"
+                },
+                "group_by": [],
+                "search": {
+                  "query": "service:ordem-servico-service env:prod \"movida para o status Entregue\""
+                }
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Transições — Descartada",
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "display_type": "bars",
+            "queries": [
+              {
+                "data_source": "logs",
+                "name": "query1",
+                "indexes": [
+                  "*"
+                ],
+                "compute": {
+                  "aggregation": "count"
+                },
+                "group_by": [],
+                "search": {
+                  "query": "service:ordem-servico-service env:prod \"movida para o status Descartada\""
+                }
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Compensação — Falha ao gravar orçamento",
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "display_type": "bars",
+            "queries": [
+              {
+                "data_source": "logs",
+                "name": "query1",
+                "indexes": [
+                  "*"
+                ],
+                "compute": {
+                  "aggregation": "count"
+                },
+                "group_by": [],
+                "search": {
+                  "query": "service:orcamento-service env:prod \"Falha ao gravar orçamento\""
+                }
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Worker nacks — Failed to process Pub/Sub message",
+        "type": "timeseries",
+        "requests": [
+          {
+            "response_format": "timeseries",
+            "display_type": "bars",
+            "queries": [
+              {
+                "data_source": "logs",
+                "name": "query1",
+                "indexes": [
+                  "*"
+                ],
+                "compute": {
+                  "aggregation": "count"
+                },
+                "group_by": [],
+                "search": {
+                  "query": "env:prod \"Failed to process Pub/Sub message\""
+                }
+              }
+            ],
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Pub/Sub — undelivered por subscription",
+        "type": "timeseries",
+        "requests": [
+          {
+            "q": "sum:gcp.pubsub.subscription.num_undelivered_messages{project_id:vcosta-fiap-tech-challenge} by {subscription_id}",
+            "display_type": "bars"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Pub/Sub — dead_letter_message_count",
+        "type": "timeseries",
+        "requests": [
+          {
+            "q": "sum:gcp.pubsub.subscription.dead_letter_message_count{project_id:vcosta-fiap-tech-challenge} by {subscription_id}.as_count()",
+            "display_type": "bars"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Cloud SQL — CPU utilization",
+        "type": "timeseries",
+        "requests": [
+          {
+            "q": "avg:gcp.cloudsql.database.cpu.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:tech-challenge-pg}",
+            "display_type": "line"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Cloud SQL — memory utilization",
+        "type": "timeseries",
+        "requests": [
+          {
+            "q": "avg:gcp.cloudsql.database.memory.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:tech-challenge-pg}",
+            "display_type": "line"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Cloud SQL — connections",
+        "type": "timeseries",
+        "requests": [
+          {
+            "q": "avg:gcp.cloudsql.database.network.connections{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:tech-challenge-pg}",
+            "display_type": "line"
+          }
+        ]
+      }
+    },
+    {
+      "definition": {
+        "title": "Cloud SQL — disk utilization",
+        "type": "timeseries",
+        "requests": [
+          {
+            "q": "avg:gcp.cloudsql.database.disk.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:tech-challenge-pg}",
+            "display_type": "line"
+          }
+        ]
+      }
+    }
+  ]
+}
