@@ -84,7 +84,7 @@ Workflow [`ci.yml`](.github/workflows/ci.yml) (PR / push `main` / manual): WIF ‚
 
 ### Requestly
 
-Collection do sistema (cinco prefixos) e environments **Docker** / **GCP-Gateway**: [`docs/requestly/`](docs/requestly/). Importar `sistema.requestly.json` no Requestly API Client.
+[`docs/requestly/`](docs/requestly/): explorat√≥ria (`sistema.requestly.json`) e suites e2e (`sistema-e2e-tests.requestly.json`, Collection Runner). Environments **Docker** / **GCP-Gateway**.
 
 ## Janela GCP (`demo-up` / `demo-down`)
 
