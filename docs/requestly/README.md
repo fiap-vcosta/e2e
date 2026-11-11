@@ -24,7 +24,7 @@ Importe `sistema-e2e-tests.requestly.json`, escolha **Docker**, e em cada pasta:
 
 | Pasta | O que cobre |
 |-------|-------------|
-| `01-staff-ate-aguardando-pagamento` | Seed → OS → aprovar → executar → `AguardandoPagamento` (13–14 webhook/`Entregue` opcionais) |
+| `01-staff-ate-entregue` | Seed → OS → aprovar → executar → WireMock + webhook → `Entregue` (Docker; em GCP pare no passo 12) |
 | `02-rejeicao-depois-descartar` | Rejeitar → `EmDiagnostico` → descartar |
 | `03-itens-em-falta-ate-liberada` | Saldo 0 → `AguardandoPeca` → entrada → `LiberadaParaExecucao` |
 | `04-contratos-borda` | 401 sem JWT + JWKS |

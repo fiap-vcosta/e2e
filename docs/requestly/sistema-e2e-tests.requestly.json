@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "1.1.0",
-    "exportedAt": "2026-11-11T22:30:00.000Z",
+    "exportedAt": "2026-11-11T23:30:00.000Z",
     "exportedUsing": "Requestly API Client"
   },
   "records": [
@@ -18,11 +18,11 @@
         }
       },
       "rank": "a00",
-      "description": "Suites e2e (Collection Runner) da saga entre os 5 servicos. Environment Docker (8080-8084) ou GCP-Gateway. Cada pasta: login + seed. Apos Pub/Sub, asserts esperam ~3-7s; se falhar, rode o GET de novo. Passos 13-14 da suite 01 (webhook/Entregue) sao opcionais. Substitui o legado ordem-servico/.../tech-challenge-e2e-tests (paths /api)."
+      "description": "Suites e2e (Collection Runner) da saga entre os 5 servicos. Environment Docker (8080-8084 + WireMock :8089) ou GCP-Gateway. Suite 01 completa ate Entregue no Docker via WireMock+webhook. Apos Pub/Sub, asserts esperam alguns segundos; se falhar, rode o GET de novo."
     },
     {
       "id": "c2e20001-0000-4000-8000-000000000002",
-      "name": "01-staff-ate-aguardando-pagamento",
+      "name": "01-staff-ate-entregue",
       "type": "collection",
       "parentId": "c2e20001-0000-4000-8000-000000000001",
       "deleted": false,
@@ -32,7 +32,7 @@
         }
       },
       "rank": "a00",
-      "description": "Happy path staff ate AguardandoPagamento. 13-14 opcionais (webhook assinado -> Entregue)."
+      "description": "Happy path staff ate Entregue no compose (WireMock). Passos 13+ usam journal/stub do WireMock + webhook HMAC (secret e2e-webhook-secret). So Docker; em GCP-Gateway pare em 12-assert-aguardando-pagamento."
     },
     {
       "id": "c2e20001-0000-4000-8000-000000000003",
@@ -483,88 +483,6 @@
         }
       },
       "rank": "a12"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000010",
-      "name": "13-webhook-aprovado-opcional",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{orcamentoUrl}}/orcamento/webhook/mercado-pago?data.id={{dataId}}&type=order",
-          "method": "POST",
-          "headers": [
-            {
-              "id": 1,
-              "key": "Content-Type",
-              "value": "application/json",
-              "isEnabled": true,
-              "description": ""
-            },
-            {
-              "id": 2,
-              "key": "x-signature",
-              "value": "{{xSignature}}",
-              "isEnabled": true,
-              "description": ""
-            },
-            {
-              "id": 3,
-              "key": "x-request-id",
-              "value": "{{xRequestId}}",
-              "isEnabled": true,
-              "description": ""
-            }
-          ],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "raw",
-            "raw": "{\n  \"action\": \"order.processed\",\n  \"data\": { \"id\": \"{{dataId}}\" }\n}",
-            "rawContentType": "application/json"
-          },
-          "contentType": "raw"
-        },
-        "auth": {
-          "type": "inherit"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Webhook aceito\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 204]);\n});"
-        }
-      },
-      "rank": "a13"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000011",
-      "name": "14-assert-entregue-opcional",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
-          "method": "GET",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "preRequest": "var __t = Date.now(); while (Date.now() - __t < 3000) {}",
-          "postResponse": "rq.test(\"GET OS retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Status da OS e Entregue\", function () {\n  rq.expect(jsonData.status).to.equal(\"Entregue\");\n});\nrq.test(\"Id da OS confere\", function () {\n  rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n});\n"
-        }
-      },
-      "rank": "a14"
     },
     {
       "id": "c2e20001-0000-4000-8000-000000000012",
@@ -1550,6 +1468,156 @@
         }
       },
       "rank": "a02"
+    },
+    {
+      "id": "c2e20001-0000-4000-8000-000000000033",
+      "name": "13-wiremock-order-id",
+      "type": "api",
+      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{wiremockUrl}}/__admin/requests",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "preRequest": "var __t = Date.now(); while (Date.now() - __t < 3000) {}",
+          "postResponse": "rq.test(\"WireMock journal 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar journal = rq.response.json();\nvar ids = [];\n(journal.requests || []).forEach(function (entry) {\n  var req = entry.request || {};\n  var method = String(req.method || \"\").toUpperCase();\n  var url = String(req.url || \"\");\n  if (method !== \"POST\") return;\n  if (url.indexOf(\"/v1/orders\") < 0 || url.indexOf(\"/cancel\") >= 0) return;\n  var bodyText = entry.response && entry.response.body;\n  if (!bodyText) return;\n  try {\n    var body = typeof bodyText === \"string\" ? JSON.parse(bodyText) : bodyText;\n    if (body && body.id && ids.indexOf(body.id) < 0) ids.push(String(body.id));\n  } catch (e) {}\n});\nrq.test(\"WireMock registrou order id\", function () {\n  rq.expect(ids.length).to.be.above(0);\n});\nvar orderId = ids[ids.length - 1];\nrq.environment.set(\"dataId\", orderId);\nrq.environment.set(\"xRequestId\", \"req-requestly-e2e\");\n"
+        }
+      },
+      "rank": "a13"
+    },
+    {
+      "id": "c2e20001-0000-4000-8000-000000000034",
+      "name": "14-wiremock-stub-processed",
+      "type": "api",
+      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{wiremockUrl}}/__admin/mappings",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"priority\": 1,\n  \"request\": {\n    \"method\": \"GET\",\n    \"urlPath\": \"/v1/orders/{{dataId}}\"\n  },\n  \"response\": {\n    \"status\": 200,\n    \"headers\": {\n      \"Content-Type\": \"application/json\"\n    },\n    \"jsonBody\": {\n      \"id\": \"{{dataId}}\",\n      \"status\": \"processed\",\n      \"status_detail\": \"accredited\",\n      \"transactions\": {\n        \"payments\": [\n          {\n            \"amount\": \"100.00\",\n            \"payment_method\": {\n              \"id\": \"pix\",\n              \"type\": \"bank_transfer\",\n              \"qr_code\": \"00020126e2e-fake-pix-qr\",\n              \"ticket_url\": \"https://www.mercadopago.com.br/payments/e2e/ticket\"\n            }\n          }\n        ]\n      }\n    }\n  }\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Stub WireMock criado\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201]);\n});"
+        }
+      },
+      "rank": "a14"
+    },
+    {
+      "id": "c2e20001-0000-4000-8000-000000000035",
+      "name": "15-webhook-aprovado",
+      "type": "api",
+      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{orcamentoUrl}}/orcamento/webhook/mercado-pago?data.id={{dataId}}&type=order",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            },
+            {
+              "id": 2,
+              "key": "x-signature",
+              "value": "{{xSignature}}",
+              "isEnabled": true,
+              "description": ""
+            },
+            {
+              "id": 3,
+              "key": "x-request-id",
+              "value": "{{xRequestId}}",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"action\": \"order.processed\",\n  \"data\": { \"id\": \"{{dataId}}\" }\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "preRequest": "function hmacSha256Hex(keyStr, msgStr) {\n  function toBytes(s) {\n    var out = [];\n    for (var i = 0; i < s.length; i++) out.push(s.charCodeAt(i) & 0xff);\n    return out;\n  }\n  function bytesToHex(b) {\n    var hex = \"\";\n    for (var i = 0; i < b.length; i++) hex += ((b[i] < 16 ? \"0\" : \"\") + b[i].toString(16));\n    return hex;\n  }\n  // SHA-256 (sync)\n  function sha256(bytes) {\n    function rotr(n, x) { return (x >>> n) | (x << (32 - n)); }\n    var K = [\n      0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,\n      0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,\n      0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,\n      0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,\n      0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,\n      0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,\n      0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,\n      0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2\n    ];\n    var H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];\n    var l = bytes.length;\n    var bitLenHi = Math.floor(l / 0x20000000);\n    var bitLenLo = (l << 3) >>> 0;\n    bytes = bytes.slice();\n    bytes.push(0x80);\n    while ((bytes.length % 64) !== 56) bytes.push(0);\n    bytes.push((bitLenHi >>> 24) & 0xff, (bitLenHi >>> 16) & 0xff, (bitLenHi >>> 8) & 0xff, bitLenHi & 0xff);\n    bytes.push((bitLenLo >>> 24) & 0xff, (bitLenLo >>> 16) & 0xff, (bitLenLo >>> 8) & 0xff, bitLenLo & 0xff);\n    for (var i = 0; i < bytes.length; i += 64) {\n      var w = new Array(64);\n      for (var j = 0; j < 16; j++) {\n        var o = i + j * 4;\n        w[j] = ((bytes[o] << 24) | (bytes[o+1] << 16) | (bytes[o+2] << 8) | bytes[o+3]) >>> 0;\n      }\n      for (var j = 16; j < 64; j++) {\n        var s0 = (rotr(7, w[j-15]) ^ rotr(18, w[j-15]) ^ (w[j-15] >>> 3)) >>> 0;\n        var s1 = (rotr(17, w[j-2]) ^ rotr(19, w[j-2]) ^ (w[j-2] >>> 10)) >>> 0;\n        w[j] = (w[j-16] + s0 + w[j-7] + s1) >>> 0;\n      }\n      var a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];\n      for (var j = 0; j < 64; j++) {\n        var S1 = (rotr(6, e) ^ rotr(11, e) ^ rotr(25, e)) >>> 0;\n        var ch = ((e & f) ^ (~e & g)) >>> 0;\n        var t1 = (h + S1 + ch + K[j] + w[j]) >>> 0;\n        var S0 = (rotr(2, a) ^ rotr(13, a) ^ rotr(22, a)) >>> 0;\n        var maj = ((a & b) ^ (a & c) ^ (b & c)) >>> 0;\n        var t2 = (S0 + maj) >>> 0;\n        h=g; g=f; f=e; e=(d + t1) >>> 0; d=c; c=b; b=a; a=(t1 + t2) >>> 0;\n      }\n      H[0]=(H[0]+a)>>>0; H[1]=(H[1]+b)>>>0; H[2]=(H[2]+c)>>>0; H[3]=(H[3]+d)>>>0;\n      H[4]=(H[4]+e)>>>0; H[5]=(H[5]+f)>>>0; H[6]=(H[6]+g)>>>0; H[7]=(H[7]+h)>>>0;\n    }\n    var out = [];\n    for (var i = 0; i < 8; i++) {\n      out.push((H[i] >>> 24) & 0xff, (H[i] >>> 16) & 0xff, (H[i] >>> 8) & 0xff, H[i] & 0xff);\n    }\n    return out;\n  }\n  var block = 64;\n  var key = toBytes(keyStr);\n  if (key.length > block) key = sha256(key);\n  while (key.length < block) key.push(0);\n  var oKey = [], iKey = [];\n  for (var i = 0; i < block; i++) {\n    oKey.push(key[i] ^ 0x5c);\n    iKey.push(key[i] ^ 0x36);\n  }\n  return bytesToHex(sha256(oKey.concat(sha256(iKey.concat(toBytes(msgStr))))));\n}\n\nvar dataId = String(rq.environment.get(\"dataId\") || \"\");\nvar requestId = String(rq.environment.get(\"xRequestId\") || \"req-requestly-e2e\");\nvar secret = String(rq.environment.get(\"webhookSecret\") || \"e2e-webhook-secret\");\nvar ts = String(Date.now());\nvar manifest = \"id:\" + dataId.toLowerCase() + \";request-id:\" + requestId + \";ts:\" + ts + \";\";\nvar hash = hmacSha256Hex(secret, manifest);\nrq.environment.set(\"xSignature\", \"ts=\" + ts + \",v1=\" + hash);\n",
+          "postResponse": "rq.test(\"Webhook aceito\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 204]);\n});"
+        }
+      },
+      "rank": "a15"
+    },
+    {
+      "id": "c2e20001-0000-4000-8000-000000000036",
+      "name": "16-assert-entregue",
+      "type": "api",
+      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "preRequest": "var __t = Date.now(); while (Date.now() - __t < 3000) {}\nvar __t2 = Date.now(); while (Date.now() - __t2 < 4000) {}",
+          "postResponse": "rq.test(\"GET OS retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Status da OS e Entregue\", function () {\n  rq.expect(jsonData.status).to.equal(\"Entregue\");\n});\nrq.test(\"Id da OS confere\", function () {\n  rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n});\n"
+        }
+      },
+      "rank": "a16"
     }
   ],
   "environments": [
@@ -1648,6 +1716,14 @@
         "xSignature": {
           "type": "secret",
           "syncValue": ""
+        },
+        "wiremockUrl": {
+          "type": "string",
+          "syncValue": "http://localhost:8089"
+        },
+        "webhookSecret": {
+          "type": "secret",
+          "syncValue": "e2e-webhook-secret"
         }
       }
     },
@@ -1744,6 +1820,14 @@
           "syncValue": "req-requestly-e2e"
         },
         "xSignature": {
+          "type": "secret",
+          "syncValue": ""
+        },
+        "wiremockUrl": {
+          "type": "string",
+          "syncValue": ""
+        },
+        "webhookSecret": {
           "type": "secret",
           "syncValue": ""
         }

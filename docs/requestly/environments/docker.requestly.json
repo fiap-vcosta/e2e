@@ -85,6 +85,14 @@
         "xSignature": {
           "type": "secret",
           "syncValue": ""
+        },
+        "wiremockUrl": {
+          "type": "string",
+          "syncValue": "http://localhost:8089"
+        },
+        "webhookSecret": {
+          "type": "secret",
+          "syncValue": "e2e-webhook-secret"
         }
       }
     }
