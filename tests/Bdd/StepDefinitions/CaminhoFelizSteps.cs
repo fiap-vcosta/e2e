@@ -16,7 +16,7 @@ public sealed class CaminhoFelizSteps(JsonHttp http, SagaContext ctx)
         await http.GetAsync($"{ServiceUrls.Estoque}/estoque/health");
         await http.GetAsync($"{ServiceUrls.OrdemServico}/ordem-servico/health");
         await http.GetAsync($"{ServiceUrls.Orcamento}/orcamento/health");
-        await http.ResetWireMockRequestsAsync();
+        await http.ResetWireMockAsync();
     }
 
     [Given(@"que faço login staff com ""(.*)"" e ""(.*)""")]
@@ -157,16 +157,34 @@ public sealed class CaminhoFelizSteps(JsonHttp http, SagaContext ctx)
     public async Task QuandoEnvioWebhookAprovado()
     {
         ctx.CobrancaId = await http.WaitForWireMockOrderIdAsync(PollTimeout);
-        const string requestId = "req-e2e-happy";
-        var signature = WebhookSigner.Sign(ctx.CobrancaId, requestId, ServiceUrls.WebhookSecret);
-        await http.SendAsync(
-            HttpMethod.Post,
-            $"{ServiceUrls.Orcamento}/orcamento/webhook/mercado-pago?data.id={Uri.EscapeDataString(ctx.CobrancaId)}&type=order",
-            new { action = "order.processed", data = new { id = ctx.CobrancaId } },
-            [
-                new KeyValuePair<string, string>("x-request-id", requestId),
-                new KeyValuePair<string, string>("x-signature", signature)
-            ]);
+        await http.StubGetOrderStatusAsync(ctx.CobrancaId, "processed", "accredited");
+        await EnviarWebhookAsync(ctx.CobrancaId, "order.processed", "req-e2e-happy");
+    }
+
+    [When("envio o webhook de pagamento recusado do Mercado Pago")]
+    public async Task QuandoEnvioWebhookRecusado()
+    {
+        ctx.CobrancaIdAnterior = await http.WaitForWireMockOrderIdAsync(PollTimeout);
+        ctx.CobrancaId = ctx.CobrancaIdAnterior;
+        await http.StubGetOrderStatusAsync(ctx.CobrancaIdAnterior, "rejected", "rejected_by_bank");
+        await EnviarWebhookAsync(ctx.CobrancaIdAnterior, "order.failed", "req-e2e-refused");
+
+        var ids = await http.WaitForWireMockOrderIdsAsync(2, PollTimeout);
+        var nova = ids.FirstOrDefault(id =>
+            !string.Equals(id, ctx.CobrancaIdAnterior, StringComparison.Ordinal));
+        if (nova is null)
+        {
+            throw new TimeoutException("Não surgiu segunda cobrança Pix após recusa.");
+        }
+
+        ctx.CobrancaId = nova;
+    }
+
+    [When("descarto a ordem de serviço")]
+    public async Task QuandoDescarto()
+    {
+        await http.PostAsync(
+            $"{ServiceUrls.OrdemServico}/ordem-servico/{ctx.OrdemServicoId}/descartar");
     }
 
     [Then(@"a ordem de serviço fica com status ""(.*)""")]
@@ -195,5 +213,30 @@ public sealed class CaminhoFelizSteps(JsonHttp http, SagaContext ctx)
 
         throw new TimeoutException(
             $"OS {ctx.OrdemServicoId} não chegou a '{statusEsperado}' (último: '{atual}').");
+    }
+
+    [Then("uma nova cobrança Pix foi criada no WireMock")]
+    public void EntaoNovaCobranca()
+    {
+        if (string.IsNullOrWhiteSpace(ctx.CobrancaIdAnterior)
+            || string.IsNullOrWhiteSpace(ctx.CobrancaId)
+            || string.Equals(ctx.CobrancaId, ctx.CobrancaIdAnterior, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"Esperava cobrancaId novo após recusa (anterior={ctx.CobrancaIdAnterior}, atual={ctx.CobrancaId}).");
+        }
+    }
+
+    private async Task EnviarWebhookAsync(string orderId, string action, string requestId)
+    {
+        var signature = WebhookSigner.Sign(orderId, requestId, ServiceUrls.WebhookSecret);
+        await http.SendAsync(
+            HttpMethod.Post,
+            $"{ServiceUrls.Orcamento}/orcamento/webhook/mercado-pago?data.id={Uri.EscapeDataString(orderId)}&type=order",
+            new { action, data = new { id = orderId } },
+            [
+                new KeyValuePair<string, string>("x-request-id", requestId),
+                new KeyValuePair<string, string>("x-signature", signature)
+            ]);
     }
 }

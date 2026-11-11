@@ -17,7 +17,7 @@ Compose do sistema, testes de ponta a ponta (Reqnroll), collections HTTP e diagr
 | `scripts/setup-local-jwt.sh` | Gera `.local/jwt` + `.env` |
 | `scripts/init-pubsub-emulator.sh` | Tópicos/subscriptions alinhados aos serviços |
 | `wiremock/mappings/` | Fake Mercado Pago Orders (`MercadoPago__BaseUrl`) |
-| `tests/Bdd/` | Reqnroll (caminho feliz da Saga contra o compose) |
+| `tests/Bdd/` | Reqnroll (caminho feliz + compensações contra o compose) |
 | `e2e.sln` | Solution do BDD |
 | `.github/workflows/demo-up.yml` / `demo-down.yml` | Orquestradores GCP |
 | `.github/workflows/demo-phase-*.yml` | Matrix por repo; dispara `tf-apply` / `tf-destroy` / `deploy` via PAT |
@@ -40,4 +40,4 @@ dotnet test tests/Bdd/E2e.Bdd.csproj -c Release
 # Na UI do repo e2e: Actions → demo-up / demo-down → Run workflow
 ```
 
-Requestly do sistema / CI BDD / compensações: partes seguintes da §13.
+Requestly do sistema / CI BDD: partes seguintes da §13.
