@@ -1,5 +1,5 @@
 {
-  "title": "Tech Challenge — Saga (demo)",
+  "title": "[saga] dashboard",
   "description": "Dashboard da janela de demo (Saga): latência/erros/hits APM nos 5 serviços, transições de OS (logs), compensações, nacks Pub/Sub, DLQ e Cloud SQL (integração GCP).",
   "layout_type": "ordered",
   "reflow_type": "auto",

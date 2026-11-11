@@ -1,11 +1,10 @@
 {
-  "name": "demo — Pub/Sub dead-letter (subscriptions)",
+  "name": "[saga] pubsub dead-letter",
   "type": "query alert",
   "query": "sum(last_15m):sum:gcp.pubsub.subscription.dead_letter_message_count{project_id:vcosta-fiap-tech-challenge AND subscription_id IN (ordem-servico-orcamento-gerado,ordem-servico-orcamento-falhou,ordem-servico-estoque-reservado,ordem-servico-estoque-em-falta,ordem-servico-cobranca-gerada,ordem-servico-pagamento-confirmado,ordem-servico-pagamento-recusado,estoque-ordem-servico-aprovada,estoque-ordem-servico-finalizada,estoque-ordem-servico-descartada,orcamento-diagnostico-finalizado,orcamento-ordem-servico-finalizada,orcamento-ordem-servico-descartada)}.as_count() > 0",
   "message": "{{#is_alert}}Mensagens foram enviadas para dead-letter (GCP Pub/Sub) nas subscriptions da demo nos últimos 15 minutos. Conferir tópicos `*-dlq`, logs `Failed to process Pub/Sub message` e APM dos workers.{{/is_alert}}\n{{#is_recovery}}Sem novas mensagens em dead-letter na janela.{{/is_recovery}}",
   "tags": [
-    "env:prod",
-    "demo:tech-challenge"
+    "env:prod"
   ],
   "options": {
     "thresholds": {

@@ -1,11 +1,10 @@
 {
-  "name": "demo — Pub/Sub worker nacks",
+  "name": "[saga] pubsub nacks",
   "type": "log alert",
   "query": "logs(\"env:prod \\\"Failed to process Pub/Sub message\\\"\").index(\"*\").rollup(\"count\").last(\"10m\") > 3",
   "message": "{{#is_alert}}Mais de 3 nacks de workers Pub/Sub (`Failed to process Pub/Sub message`) em `env:prod` nos últimos 10 minutos. Conferir DLQ e APM dos serviços de messaging.{{/is_alert}}\n{{#is_recovery}}Nacks de Pub/Sub voltaram ao normal.{{/is_recovery}}",
   "tags": [
-    "env:prod",
-    "demo:tech-challenge"
+    "env:prod"
   ],
   "options": {
     "thresholds": {
