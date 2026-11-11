@@ -128,7 +128,7 @@ sequenceDiagram
 
 O staff ajusta o diagnóstico e finaliza de novo. A nova publicação usa outro `versaoDiagnostico`.
 
-## Compensação: pagamento recusado ou expirado
+## Compensação: pagamento recusado
 
 ```mermaid
 sequenceDiagram
@@ -142,6 +142,27 @@ sequenceDiagram
     Orc->>MP: cancela a order
     Orc->>OS: PagamentoRecusado
     OS->>OS: permanece AguardandoPagamento
+    Orc->>MP: cria outra order Pix
+    Orc->>OS: CobrancaGerada
+    Orc-->>Orc: CobrancaPixDisponivel
+```
+
+## Compensação: pagamento expirado
+
+```mermaid
+sequenceDiagram
+    actor Staff
+    participant OS as OrdemServico
+    participant Orc as Orcamento
+    participant MP as MercadoPago
+
+    OS->>OS: AguardandoPagamento
+    MP->>Orc: webhook
+    Orc->>MP: consulta a order
+    Orc->>MP: cancela a order
+    Orc->>OS: PagamentoRecusado (motivo expirado)
+    OS->>OS: permanece AguardandoPagamento
+    Staff->>Orc: POST /orcamento/ordens/{id}/cobrancas
     Orc->>MP: cria outra order Pix
     Orc->>OS: CobrancaGerada
     Orc-->>Orc: CobrancaPixDisponivel
