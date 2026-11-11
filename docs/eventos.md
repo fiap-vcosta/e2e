@@ -203,7 +203,7 @@ Vale para recusa e para expiração. O orçamento cancela a order no Mercado Pag
 }
 ```
 
-`motivo` é `recusado` ou `expirado`. Efeito, a partir de `AguardandoPagamento`: a OS permanece em `AguardandoPagamento` até uma nova `CobrancaGerada`.
+`motivo` é `recusado` ou `expirado`. Efeito, a partir de `AguardandoPagamento`: a OS permanece em `AguardandoPagamento` até uma nova `CobrancaGerada`. Em `recusado`, o orçamento cria outra order Pix sozinho. Em `expirado`, a nova cobrança é manual (`POST /orcamento/ordens/{ordemServicoId}/cobrancas`).
 
 ### `OrdemServicoDescartada`
 
