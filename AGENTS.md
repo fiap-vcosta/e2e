@@ -8,14 +8,17 @@ Compose do sistema, testes de ponta a ponta (Reqnroll), collections HTTP e diagr
 2. Não colocar código-fonte de microsserviço nem Terraform de GCP aqui
 3. **Git:** nunca commit/push direto em `main` — branch → PR → merge (ver [`.cursor/rules/git-workflow.mdc`](.cursor/rules/git-workflow.mdc))
 
-## Layout alvo
-
-Compose do sistema inteiro, BDD com Reqnroll, collections HTTP e diagramas de arquitetura.
+## Layout
 
 | Peça | Papel |
 |------|--------|
-| `.github/workflows/demo-up.yml` / `demo-down.yml` | Orquestradores: jobs `uses:` → phases (caixa grande na UI) |
-| `.github/workflows/demo-phase-*.yml` | Matrix por repo (caixas pequenas); dispara `tf-apply` / `tf-destroy` / `deploy` via PAT |
+| `docker-compose.yml` | Sistema: 5 serviços (imagens AR) + Postgres + Firestore/Pub/Sub emulators + WireMock |
+| `scripts/compose.sh` | Wrapper que exporta PEMs JWT e chama `docker compose` |
+| `scripts/setup-local-jwt.sh` | Gera `.local/jwt` + `.env` |
+| `scripts/init-pubsub-emulator.sh` | Tópicos/subscriptions alinhados aos serviços |
+| `wiremock/mappings/` | Fake Mercado Pago Orders (`MercadoPago__BaseUrl`) |
+| `.github/workflows/demo-up.yml` / `demo-down.yml` | Orquestradores GCP |
+| `.github/workflows/demo-phase-*.yml` | Matrix por repo; dispara `tf-apply` / `tf-destroy` / `deploy` via PAT |
 | `scripts/gh-dispatch-wait.sh` | Dispara um workflow e espera o run (`POLL_SECONDS=20`) |
 
 ## Fora de escopo
@@ -25,7 +28,13 @@ Código de domínio dos serviços e root modules Terraform da GCP (só orquestra
 ## Comandos
 
 ```bash
+./scripts/setup-local-jwt.sh
+gcloud auth configure-docker us-central1-docker.pkg.dev
+./scripts/compose.sh pull
+./scripts/compose.sh up -d
+# health: curl localhost:8080–8084 …/health
+
 # Na UI do repo e2e: Actions → demo-up / demo-down → Run workflow
 ```
 
-Compose / BDD / collections ainda não existem — não inventar comandos `dotnet` até chegarem.
+BDD Reqnroll / Requestly do sistema / CI BDD: ainda em entrega (partes seguintes da §13).

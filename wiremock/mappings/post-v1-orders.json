@@ -1,0 +1,31 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/v1/orders"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "transformers": ["response-template"],
+    "jsonBody": {
+      "id": "ORD_{{randomValue length=12 type='ALPHANUMERIC'}}",
+      "status": "action_required",
+      "status_detail": "pending_waiting_transfer",
+      "transactions": {
+        "payments": [
+          {
+            "amount": "100.00",
+            "payment_method": {
+              "id": "pix",
+              "type": "bank_transfer",
+              "qr_code": "00020126e2e-fake-pix-qr",
+              "ticket_url": "https://www.mercadopago.com.br/payments/e2e/ticket"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
