@@ -21,7 +21,7 @@ Monitores ficam nos **repos de cada serviço** (dono do consume/DLQ/nack, do pub
 
 Widgets de **Pub/Sub DLQ** e **Cloud SQL** exigem a integração **Google Cloud Platform** no Datadog, com o projeto `vcosta-fiap-tech-challenge` conectado (roles de leitura de métricas).
 
-- Cloud SQL: `database_id:vcosta-fiap-tech-challenge:tech-challenge-pg`
+- Cloud SQL (uma instância por serviço SQL): `administrativo-service-pg`, `estoque-service-pg`, `ordem-servico-service-pg`
 - DLQ: monitores por serviço consumidor usam `gcp.pubsub.subscription.dead_letter_message_count` (tópico destino `${subscription}-dlq`)
 
 Limite a coleta a tags/métricas necessárias — sidecars Datadog + nós GKE contam no plano estudante. HPA dos serviços com `maxReplicas=2` para não estourar hosts fora do teste de carga.

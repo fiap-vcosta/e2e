@@ -19,7 +19,6 @@ jobs:
       fail-fast: false
       matrix:
         repo:
-          - infra-db
           - infra-k8s
           - infra-events
     steps:

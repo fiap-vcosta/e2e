@@ -9,6 +9,7 @@ Contrato entre os serviços:
 - [Saga](docs/saga.md)
 - [HTTP](docs/contratos-http.md)
 - [Requestly do sistema](docs/requestly/)
+- [ADR: 1 Cloud SQL por serviço SQL](docs/adrs/001-instancia-cloud-sql-por-servico.md)
 
 ## Compose local (imagens do Artifact Registry)
 
@@ -107,8 +108,8 @@ Workflows manuais que disparam, via `gh`, os `tf-apply` / `tf-destroy` / `deploy
 
 | Workflow | Caixas na UI (reusable + matrix) |
 |----------|----------------------------------|
-| [`demo-up`](.github/workflows/demo-up.yml) | **infra** (`infra-db` ∥ `infra-k8s` ∥ `infra-events`) → **tf-servicos** → **deploy** |
-| [`demo-down`](.github/workflows/demo-down.yml) | **k8s** (`infra-k8s`) → **tf-servicos** → **infra** (`infra-db` ∥ `infra-events`) |
+| [`demo-up`](.github/workflows/demo-up.yml) | **infra** (`infra-k8s` ∥ `infra-events`) → **tf-servicos** (inclui 3 Cloud SQL) → **deploy** |
+| [`demo-down`](.github/workflows/demo-down.yml) | **k8s** (`infra-k8s`) → **tf-servicos** → **infra** (`infra-events`) |
 
 Fases em `demo-phase-*.yml`. Serviços hoje: **`administrativo-service`**, **`autenticacao-service`**, **`estoque-service`**, **`orcamento-service`**, **`ordem-servico-service`**.
 

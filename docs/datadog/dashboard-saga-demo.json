@@ -1,6 +1,6 @@
 {
   "title": "[saga] dashboard",
-  "description": "Dashboard geral da Saga: monitores, golden metrics das APIs, Pub/Sub entrada/saída/DLQ, Cloud SQL, Firestore e transições de OS.",
+  "description": "Dashboard geral da Saga: monitores, golden metrics das APIs, Pub/Sub entrada/sa\u00edda/DLQ, Cloud SQL, Firestore e transi\u00e7\u00f5es de OS.",
   "layout_type": "ordered",
   "reflow_type": "auto",
   "widgets": [
@@ -44,7 +44,7 @@
         "widgets": [
           {
             "definition": {
-              "title": "Latência p95 por serviço",
+              "title": "Lat\u00eancia p95 por servi\u00e7o",
               "type": "timeseries",
               "requests": [
                 {
@@ -72,7 +72,7 @@
           },
           {
             "definition": {
-              "title": "Tráfego — hits por serviço",
+              "title": "Tr\u00e1fego \u2014 hits por servi\u00e7o",
               "type": "timeseries",
               "requests": [
                 {
@@ -100,7 +100,7 @@
           },
           {
             "definition": {
-              "title": "Erros por serviço",
+              "title": "Erros por servi\u00e7o",
               "type": "timeseries",
               "requests": [
                 {
@@ -128,7 +128,7 @@
           },
           {
             "definition": {
-              "title": "Taxa de erro por serviço",
+              "title": "Taxa de erro por servi\u00e7o",
               "type": "timeseries",
               "requests": [
                 {
@@ -218,7 +218,7 @@
     },
     {
       "definition": {
-        "title": "Eventos de saída (tópicos publicados)",
+        "title": "Eventos de sa\u00edda (t\u00f3picos publicados)",
         "background_color": "green",
         "show_title": true,
         "type": "group",
@@ -238,7 +238,7 @@
           },
           {
             "definition": {
-              "title": "Mensagens retidas no tópico",
+              "title": "Mensagens retidas no t\u00f3pico",
               "type": "timeseries",
               "requests": [
                 {
@@ -273,7 +273,7 @@
           },
           {
             "definition": {
-              "title": "Envios aos tópicos *-dlq",
+              "title": "Envios aos t\u00f3picos *-dlq",
               "type": "timeseries",
               "requests": [
                 {
@@ -300,7 +300,15 @@
               "type": "timeseries",
               "requests": [
                 {
-                  "q": "avg:gcp.cloudsql.database.cpu.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:tech-challenge-pg}",
+                  "q": "avg:gcp.cloudsql.database.cpu.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:administrativo-service-pg}",
+                  "display_type": "line"
+                },
+                {
+                  "q": "avg:gcp.cloudsql.database.cpu.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:estoque-service-pg}",
+                  "display_type": "line"
+                },
+                {
+                  "q": "avg:gcp.cloudsql.database.cpu.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:ordem-servico-service-pg}",
                   "display_type": "line"
                 }
               ]
@@ -312,7 +320,15 @@
               "type": "timeseries",
               "requests": [
                 {
-                  "q": "avg:gcp.cloudsql.database.memory.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:tech-challenge-pg}",
+                  "q": "avg:gcp.cloudsql.database.memory.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:administrativo-service-pg}",
+                  "display_type": "line"
+                },
+                {
+                  "q": "avg:gcp.cloudsql.database.memory.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:estoque-service-pg}",
+                  "display_type": "line"
+                },
+                {
+                  "q": "avg:gcp.cloudsql.database.memory.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:ordem-servico-service-pg}",
                   "display_type": "line"
                 }
               ]
@@ -324,7 +340,15 @@
               "type": "timeseries",
               "requests": [
                 {
-                  "q": "avg:gcp.cloudsql.database.network.connections{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:tech-challenge-pg}",
+                  "q": "avg:gcp.cloudsql.database.network.connections{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:administrativo-service-pg}",
+                  "display_type": "line"
+                },
+                {
+                  "q": "avg:gcp.cloudsql.database.network.connections{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:estoque-service-pg}",
+                  "display_type": "line"
+                },
+                {
+                  "q": "avg:gcp.cloudsql.database.network.connections{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:ordem-servico-service-pg}",
                   "display_type": "line"
                 }
               ]
@@ -336,7 +360,15 @@
               "type": "timeseries",
               "requests": [
                 {
-                  "q": "avg:gcp.cloudsql.database.disk.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:tech-challenge-pg}",
+                  "q": "avg:gcp.cloudsql.database.disk.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:administrativo-service-pg}",
+                  "display_type": "line"
+                },
+                {
+                  "q": "avg:gcp.cloudsql.database.disk.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:estoque-service-pg}",
+                  "display_type": "line"
+                },
+                {
+                  "q": "avg:gcp.cloudsql.database.disk.utilization{project_id:vcosta-fiap-tech-challenge,database_id:vcosta-fiap-tech-challenge:ordem-servico-service-pg}",
                   "display_type": "line"
                 }
               ]
@@ -406,7 +438,7 @@
     },
     {
       "definition": {
-        "title": "Insights de negócio (OS)",
+        "title": "Insights de neg\u00f3cio (OS)",
         "background_color": "yellow",
         "show_title": true,
         "type": "group",
@@ -414,7 +446,7 @@
         "widgets": [
           {
             "definition": {
-              "title": "Transições OS (todas)",
+              "title": "Transi\u00e7\u00f5es OS (todas)",
               "type": "timeseries",
               "requests": [
                 {
@@ -711,7 +743,7 @@
           },
           {
             "definition": {
-              "title": "Falha ao gravar orçamento",
+              "title": "Falha ao gravar or\u00e7amento",
               "type": "timeseries",
               "requests": [
                 {
@@ -729,7 +761,7 @@
                       },
                       "group_by": [],
                       "search": {
-                        "query": "service:orcamento-service env:prod \"Falha ao gravar orçamento\""
+                        "query": "service:orcamento-service env:prod \"Falha ao gravar or\u00e7amento\""
                       }
                     }
                   ],
