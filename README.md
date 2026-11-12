@@ -84,7 +84,7 @@ Workflow [`ci.yml`](.github/workflows/ci.yml) (PR / push `main` / manual): WIF �
 
 ### Requestly
 
-[`docs/requestly/`](docs/requestly/): exploratória (`sistema.requestly.json`) e suites e2e (`sistema-e2e-tests.requestly.json`, Collection Runner). Environments **Docker** / **GCP-Gateway**.
+[`docs/requestly/`](docs/requestly/): exploratória (`sistema.requestly.json`) e suites e2e (`sistema-e2e-tests.requestly.json`, Collection Runner) em pastas **`docker/`** e **`gcp/`**. Environments **Docker** / **GCP-Gateway**. Asserts de status fazem poll até 3 min; na GCP o happy path para em `AguardandoPagamento` (sem WireMock).
 
 ## Stress HPA (`ordem-servico-service`)
 
