@@ -21,7 +21,9 @@ flowchart TB
   end
 
   subgraph dados["Persistência"]
-    PG["Cloud SQL PostgreSQL<br/>DBs: administrativo, estoque, ordem-servico"]
+    PGAdm["Cloud SQL<br/>administrativo-service-pg"]
+    PGEst["Cloud SQL<br/>estoque-service-pg"]
+    PGOS["Cloud SQL<br/>ordem-servico-service-pg"]
     FS["Firestore nomeado<br/>autenticacao + orcamento"]
   end
 
@@ -37,9 +39,9 @@ flowchart TB
   Apex --> GKEGW
   GKEGW --> Adm & Auth & Est & OS & Orc
 
-  Adm --> PG
-  Est --> PG
-  OS --> PG
+  Adm --> PGAdm
+  Est --> PGEst
+  OS --> PGOS
   Auth --> FS
   Orc --> FS
 
