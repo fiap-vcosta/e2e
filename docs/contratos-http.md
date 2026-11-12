@@ -156,4 +156,4 @@ A OS chega a `Entregue` ao consumir `PagamentoConfirmado`. Não há rota de staf
 | `POST` | `/orcamento/webhook/mercado-pago` | anônimo; validar `x-signature` |
 | `POST` | `/orcamento/ordens/{ordemServicoId}/cobrancas` | JWT staff; nova Pix somente após cobrança `Expirada` |
 
-O webhook responde 200 e, em seguida, valida `x-signature` e consulta a order. Assinatura inválida não publica evento de pagamento. `PagamentoConfirmado` ou `PagamentoRecusado` saem depois dessa consulta. Em `recusado`, o orçamento regenera a cobrança automaticamente. Em `expirado`, a regeneração é manual pelo endpoint staff.
+O webhook responde 200 e, em seguida, valida `x-signature` e consulta a order. Assinatura inválida não publica evento de pagamento. `PagamentoConfirmado` ou `PagamentoRecusado` saem depois dessa consulta. Em `recusado`, o orçamento regenera a cobrança automaticamente (OS permanece `AguardandoPagamento`). Em `expirado`, a OS vai a `CobrancaExpirada` e a regeneração é manual pelo endpoint staff.
