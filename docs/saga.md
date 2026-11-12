@@ -4,7 +4,7 @@ Coreografia entre `ordem-servico-service`, `orcamento-service` e `estoque-servic
 
 ## Enum e listagem
 
-A declaração abaixo é a ordem do enum. A listagem ordena pelo valor do enum, do maior para o menor, e exclui `Finalizada`, `AguardandoPagamento`, `Descartada` e `Entregue`. Com isso `AguardandoOrcamento` aparece logo acima de `EmDiagnostico`. Dentro do mesmo status, a mais antiga (`recebidaEm`) vem primeiro.
+A declaração abaixo é a ordem do enum. A listagem ordena pelo valor do enum, do maior para o menor, e exclui `Finalizada`, `AguardandoPagamento`, `CobrancaExpirada`, `Descartada` e `Entregue`. Com isso `AguardandoOrcamento` aparece logo acima de `EmDiagnostico`. Dentro do mesmo status, a mais antiga (`recebidaEm`) vem primeiro.
 
 Prioridade da listagem, da mais alta para a mais baixa: `EmExecucao`, `LiberadaParaExecucao`, `AguardandoPeca`, `ChecandoEstoque`, `AguardandoAprovacao`, `AguardandoOrcamento`, `EmDiagnostico`, `Recebida`.
 
@@ -20,8 +20,9 @@ Declaração do enum:
 8. `EmExecucao`
 9. `Finalizada`
 10. `AguardandoPagamento`
-11. `Descartada`
-12. `Entregue`
+11. `CobrancaExpirada`
+12. `Descartada`
+13. `Entregue`
 
 ## Estados
 
@@ -51,9 +52,11 @@ stateDiagram-v2
     EmExecucao --> Finalizada: execucao completa
     Finalizada --> AguardandoPagamento: CobrancaGerada
     AguardandoPagamento --> Entregue: PagamentoConfirmado
+    AguardandoPagamento --> CobrancaExpirada: PagamentoRecusado motivo expirado
+    CobrancaExpirada --> AguardandoPagamento: CobrancaGerada
 ```
 
-`AguardandoPagamento` permanece nesse status em `PagamentoRecusado` e numa nova `CobrancaGerada`. `EmExecucao` permanece em `EmExecucao` enquanto a confirmação de execução não concluir todos os serviços.
+`AguardandoPagamento` permanece nesse status em `PagamentoRecusado` com motivo `recusado` e numa nova `CobrancaGerada`. Com motivo `expirado` a OS vai a `CobrancaExpirada`. `EmExecucao` permanece em `EmExecucao` enquanto a confirmação de execução não concluir todos os serviços.
 
 Finalizar o diagnóstico não escolhe mais o destino sozinho. A OS vai para `AguardandoOrcamento` e publica `DiagnosticoFinalizado`. O destino sai quando `OrcamentoGerado` chega:
 
@@ -65,9 +68,9 @@ Rejeição total, ou parcial que ainda deixe sugerido, volta a `EmDiagnostico` e
 
 Aprovação total, aprovação parcial sem sugeridos restantes, ou o caminho sem sugeridos e com aprovados, grava `aprovadaEm`, coloca a OS em `ChecandoEstoque` e publica `OrdemServicoAprovada`. A OS não compara saldo. `EstoqueReservado` libera a execução. `EstoqueEmFalta` coloca em `AguardandoPeca`. Uma entrada posterior no estoque pode publicar `EstoqueReservado` para essa mesma aprovação e tirar a OS de `AguardandoPeca`. Isso é espera de peça, não compensação.
 
-Descarte é permitido em `Recebida`, `EmDiagnostico`, `AguardandoOrcamento`, `AguardandoAprovacao`, `ChecandoEstoque`, `AguardandoPeca` e `LiberadaParaExecucao`. Não é permitido em `EmExecucao`, `Finalizada`, `AguardandoPagamento` nem `Entregue`.
+Descarte é permitido em `Recebida`, `EmDiagnostico`, `AguardandoOrcamento`, `AguardandoAprovacao`, `ChecandoEstoque`, `AguardandoPeca` e `LiberadaParaExecucao`. Não é permitido em `EmExecucao`, `Finalizada`, `AguardandoPagamento`, `CobrancaExpirada` nem `Entregue`.
 
-A execução concluída coloca a OS em `Finalizada` e publica `OrdemServicoFinalizada`. `CobrancaGerada` leva a `AguardandoPagamento`. `PagamentoConfirmado` leva a `Entregue`. `PagamentoRecusado` não muda o status.
+A execução concluída coloca a OS em `Finalizada` e publica `OrdemServicoFinalizada`. `CobrancaGerada` em `Finalizada` ou em `CobrancaExpirada` leva a `AguardandoPagamento`. `PagamentoConfirmado` leva a `Entregue`. `PagamentoRecusado` com motivo `recusado` não muda o status; com motivo `expirado` leva a `CobrancaExpirada`.
 
 ## Caminho feliz
 
@@ -161,14 +164,15 @@ sequenceDiagram
     Orc->>MP: consulta a order
     Orc->>MP: cancela a order
     Orc->>OS: PagamentoRecusado (motivo expirado)
-    OS->>OS: permanece AguardandoPagamento
+    OS->>OS: CobrancaExpirada
     Staff->>Orc: POST /orcamento/ordens/{id}/cobrancas
     Orc->>MP: cria outra order Pix
     Orc->>OS: CobrancaGerada
+    OS->>OS: AguardandoPagamento
     Orc-->>Orc: CobrancaPixDisponivel
 ```
 
-A segunda cobrança tem outro `cobrancaId`. A OS só sai de `AguardandoPagamento` com `PagamentoConfirmado`.
+A segunda cobrança tem outro `cobrancaId`. A OS só sai de `AguardandoPagamento` para `Entregue` com `PagamentoConfirmado`.
 
 ## Compensação: descarte
 

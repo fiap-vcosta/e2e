@@ -764,7 +764,7 @@
         }
       },
       "rank": "a6",
-      "description": "Webhook MP (preencha xSignature) e rebill staff apos Pix expirado. No compose, o BDD assina o webhook; aqui o secret fica so na UI."
+      "description": "Webhook MP (preencha xSignature) e rebill staff apos Pix expirado. Apos webhook expirado a OS fica CobrancaExpirada; POST cobrancas volta a AguardandoPagamento. No compose, o BDD assina o webhook; aqui o secret fica so na UI."
     },
     {
       "id": "c2e10001-0000-4000-8000-00000000001e",
