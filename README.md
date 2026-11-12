@@ -86,6 +86,21 @@ Workflow [`ci.yml`](.github/workflows/ci.yml) (PR / push `main` / manual): WIF �
 
 [`docs/requestly/`](docs/requestly/): exploratória (`sistema.requestly.json`) e suites e2e (`sistema-e2e-tests.requestly.json`, Collection Runner). Environments **Docker** / **GCP-Gateway**.
 
+## Stress HPA (`ordem-servico-service`)
+
+Na janela GCP, com o cluster no ar, o script [`scripts/stress-hpa.sh`](scripts/stress-hpa.sh) autentica no `/autenticacao/login` e gera carga em `GET /ordem-servico` para o HPA do `ordem-servico-service` (teto `maxReplicas: 5` no manifesto desse serviço).
+
+```bash
+# Gateway (mesmo host)
+./scripts/stress-hpa.sh https://vcosta-fiap.online 120 25
+
+# Compose local (só valida login + listagem; sem HPA)
+AUTH_BASE_URL=http://localhost:8081 OS_BASE_URL=http://localhost:8083 \
+  ./scripts/stress-hpa.sh unused 30 5
+```
+
+Observar no cluster: `watch -n 2 kubectl get hpa,pods -n tech-challenge`. Não roda no CI.
+
 ## Janela GCP (`demo-up` / `demo-down`)
 
 Workflows manuais que disparam, via `gh`, os `tf-apply` / `tf-destroy` / `deploy` dos outros repos e esperam o resultado.
