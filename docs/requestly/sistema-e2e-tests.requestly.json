@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "1.1.0",
-    "exportedAt": "2026-11-11T23:45:00.000Z",
+    "exportedAt": "2026-11-12T03:10:00.000Z",
     "exportedUsing": "Requestly API Client"
   },
   "records": [
@@ -18,11 +18,11 @@
         }
       },
       "rank": "a00",
-      "description": "Suites e2e (Collection Runner) da saga entre os 5 servicos. Environment Docker (8080-8084 + WireMock :8089) ou GCP-Gateway. Suite 01 completa ate Entregue no Docker via WireMock+webhook. Apos Pub/Sub, asserts esperam alguns segundos; se falhar, rode o GET de novo."
+      "description": "Suites e2e (Collection Runner) separadas por ambiente. Pasta docker: compose + WireMock ate Entregue. Pasta gcp: Gateway publico; happy path para em AguardandoPagamento (sem WireMock). Asserts de status fazem poll/retry ate 3 minutos (5s entre tentativas)."
     },
     {
-      "id": "c2e20001-0000-4000-8000-000000000002",
-      "name": "01-staff-ate-entregue",
+      "id": "7f8ef2b5-523a-418e-a38f-aac4eee59e13",
+      "name": "docker",
       "type": "collection",
       "parentId": "c2e20001-0000-4000-8000-000000000001",
       "deleted": false,
@@ -32,13 +32,41 @@
         }
       },
       "rank": "a00",
-      "description": "Happy path staff ate Entregue no compose (WireMock). Limpa journal, pega a order mais recente (ids[0]), assina webhook e espera PagamentoConfirmado. So Docker."
+      "description": "Rode com environment Docker (localhost:8080-8084 + WireMock :8089)."
     },
     {
-      "id": "c2e20001-0000-4000-8000-000000000003",
+      "id": "ada16cb2-8d3e-4f98-b07e-2bef72e0cc40",
+      "name": "gcp",
+      "type": "collection",
+      "parentId": "c2e20001-0000-4000-8000-000000000001",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a01",
+      "description": "Rode com environment GCP-Gateway (https://vcosta-fiap.online). Sem passos WireMock."
+    },
+    {
+      "id": "81bf5a7b-6919-4595-b316-c8936426c831",
+      "name": "01-staff-ate-entregue",
+      "type": "collection",
+      "parentId": "7f8ef2b5-523a-418e-a38f-aac4eee59e13",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a00",
+      "description": "Happy path staff ate Entregue no compose (WireMock). Asserts de status: poll ate 3 min. So Docker."
+    },
+    {
+      "id": "d4efc9f6-66ad-41f2-bf3a-e6b857dfa82d",
       "name": "00-login",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -74,10 +102,10 @@
       "rank": "a00"
     },
     {
-      "id": "c2e20001-0000-4000-8000-000000000037",
+      "id": "fbe492c2-55e2-48e5-9cb1-926fd5d2d377",
       "name": "00b-wiremock-clear-journal",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -103,10 +131,10 @@
       "description": "Evita pegar order id de runs anteriores no journal."
     },
     {
-      "id": "c2e20001-0000-4000-8000-000000000004",
+      "id": "a8e4d129-d29b-47b7-8316-4698fd8f1b64",
       "name": "01-criar-cliente",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -142,10 +170,10 @@
       "rank": "a01"
     },
     {
-      "id": "c2e20001-0000-4000-8000-000000000005",
+      "id": "aa16552a-22bc-44dc-9230-20c65b9ecd59",
       "name": "02-criar-veiculo",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -181,10 +209,10 @@
       "rank": "a02"
     },
     {
-      "id": "c2e20001-0000-4000-8000-000000000006",
+      "id": "036ddb49-1714-48a4-8a15-5e14e41c7461",
       "name": "03-criar-servico",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -220,10 +248,10 @@
       "rank": "a03"
     },
     {
-      "id": "c2e20001-0000-4000-8000-000000000007",
+      "id": "e5644f46-85a4-4611-8830-63f5f2ca8c22",
       "name": "04-criar-item-estoque",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -259,10 +287,10 @@
       "rank": "a04"
     },
     {
-      "id": "c2e20001-0000-4000-8000-000000000008",
+      "id": "479f59b1-1ce0-4fff-97bf-9a7330ee5780",
       "name": "05-criar-os",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -298,10 +326,10 @@
       "rank": "a05"
     },
     {
-      "id": "c2e20001-0000-4000-8000-000000000009",
+      "id": "9325f719-ed74-48e5-b553-499de17a5f16",
       "name": "06-assert-em-diagnostico",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -321,16 +349,17 @@
           "token": "{{token}}"
         },
         "scripts": {
-          "postResponse": "rq.test(\"GET OS retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Status da OS e EmDiagnostico\", function () {\n  rq.expect(jsonData.status).to.equal(\"EmDiagnostico\");\n});\nrq.test(\"Id da OS confere\", function () {\n  rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n});\n"
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"EmDiagnostico\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n",
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n"
         }
       },
       "rank": "a06"
     },
     {
-      "id": "c2e20001-0000-4000-8000-00000000000a",
+      "id": "149ae2e4-d657-4fd2-9c0f-ebbe464ffaf1",
       "name": "07-finalizar-diagnostico",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -356,10 +385,10 @@
       "rank": "a07"
     },
     {
-      "id": "c2e20001-0000-4000-8000-00000000000b",
+      "id": "15671885-74a7-4169-bcee-b15fa795940a",
       "name": "08-assert-aguardando-aprovacao",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -379,17 +408,17 @@
           "token": "{{token}}"
         },
         "scripts": {
-          "preRequest": "var __t = Date.now(); while (Date.now() - __t < 3000) {}",
-          "postResponse": "rq.test(\"GET OS retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Status da OS e AguardandoAprovacao\", function () {\n  rq.expect(jsonData.status).to.equal(\"AguardandoAprovacao\");\n});\nrq.test(\"Id da OS confere\", function () {\n  rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n});\n"
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"AguardandoAprovacao\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
         }
       },
       "rank": "a08"
     },
     {
-      "id": "c2e20001-0000-4000-8000-00000000000c",
+      "id": "4fc0fa20-4134-44a3-a469-2d5c0a151345",
       "name": "09-aprovar",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -415,10 +444,10 @@
       "rank": "a09"
     },
     {
-      "id": "c2e20001-0000-4000-8000-00000000000d",
+      "id": "033d1557-9e71-47b1-8bec-7b578717e3c0",
       "name": "10-assert-liberada",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -438,17 +467,17 @@
           "token": "{{token}}"
         },
         "scripts": {
-          "preRequest": "var __t = Date.now(); while (Date.now() - __t < 3000) {}",
-          "postResponse": "rq.test(\"GET OS retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Status da OS e LiberadaParaExecucao\", function () {\n  rq.expect(jsonData.status).to.equal(\"LiberadaParaExecucao\");\n});\nrq.test(\"Id da OS confere\", function () {\n  rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n});\n\nvar aprovados = (jsonData.servicos || []).filter(function (s) { return s.status === \"Aprovado\"; });\nif (aprovados.length > 0) { rq.environment.set(\"servicoLinhaId\", String(aprovados[0].id)); }\n"
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"LiberadaParaExecucao\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n  var aprovados = (jsonData.servicos || []).filter(function (s) { return s.status === \"Aprovado\"; });\n  if (aprovados.length > 0) { rq.environment.set(\"servicoLinhaId\", String(aprovados[0].id)); }\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
         }
       },
       "rank": "a10"
     },
     {
-      "id": "c2e20001-0000-4000-8000-00000000000e",
+      "id": "3d8e1519-c0b7-4229-a38f-9ad62eb82669",
       "name": "11-confirmar-execucao",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -484,10 +513,10 @@
       "rank": "a11"
     },
     {
-      "id": "c2e20001-0000-4000-8000-00000000000f",
+      "id": "1c7b82d5-ba56-461a-98af-f1c4276ce852",
       "name": "12-assert-aguardando-pagamento",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -507,1002 +536,17 @@
           "token": "{{token}}"
         },
         "scripts": {
-          "preRequest": "var __t = Date.now(); while (Date.now() - __t < 3000) {}\nvar __t2 = Date.now(); while (Date.now() - __t2 < 4000) {}",
-          "postResponse": "rq.test(\"GET OS retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Status da OS e AguardandoPagamento\", function () {\n  rq.expect(jsonData.status).to.equal(\"AguardandoPagamento\");\n});\nrq.test(\"Id da OS confere\", function () {\n  rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n});\n"
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"AguardandoPagamento\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
         }
       },
       "rank": "a12"
     },
     {
-      "id": "c2e20001-0000-4000-8000-000000000012",
-      "name": "02-rejeicao-depois-descartar",
-      "type": "collection",
-      "parentId": "c2e20001-0000-4000-8000-000000000001",
-      "deleted": false,
-      "data": {
-        "auth": {
-          "type": "inherit"
-        }
-      },
-      "rank": "a01",
-      "description": "Rejeita orcamento (volta EmDiagnostico) e descarta. Espelha suite 03 do legado OS."
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000013",
-      "name": "00-login",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000012",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{autenticacaoUrl}}/autenticacao/login",
-          "method": "POST",
-          "headers": [
-            {
-              "id": 1,
-              "key": "Content-Type",
-              "value": "application/json",
-              "isEnabled": true,
-              "description": ""
-            }
-          ],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "raw",
-            "raw": "{\n  \"login\": \"admin\",\n  \"senha\": \"admin\"\n}",
-            "rawContentType": "application/json"
-          },
-          "contentType": "raw"
-        },
-        "auth": {
-          "type": "inherit"
-        },
-        "scripts": {
-          "preRequest": "var L = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\";\nfunction rL() { return L[Math.floor(Math.random() * 26)]; }\nfunction dig(nums, weights) {\n  var sum = 0;\n  for (var i = 0; i < weights.length; i++) sum += nums[i] * weights[i];\n  var mod = sum % 11;\n  return mod < 2 ? 0 : 11 - mod;\n}\nvar n = [];\nfor (var i = 0; i < 9; i++) n.push(Math.floor(Math.random() * 10));\nvar d1 = dig(n, [10, 9, 8, 7, 6, 5, 4, 3, 2]);\nvar d2 = dig(n.concat([d1]), [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]);\nrq.environment.set(\"documentoCliente\", n.join(\"\") + String(d1) + String(d2));\nrq.environment.set(\"placa\", rL() + rL() + rL() + String(Math.floor(Math.random() * 10)) + rL() + String(Math.floor(Math.random() * 10)) + String(Math.floor(Math.random() * 10)));\nvar codN = String(Math.floor(Math.random() * 1000));\nwhile (codN.length < 3) codN = \"0\" + codN;\nrq.environment.set(\"codigoServico\", rL() + rL() + rL() + \"-\" + codN);\nrq.environment.set(\"codigoItem\", rL() + rL() + rL() + \"-\" + codN);\nrq.environment.set(\"runSuffix\", String(Date.now()).slice(-6));\n",
-          "postResponse": "rq.test(\"Login retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Login retorna token\", function () {\n  rq.expect(jsonData).to.have.property(\"token\");\n  rq.expect(jsonData.token).to.be.a(\"string\").and.not.empty;\n});\nrq.environment.set(\"token\", jsonData.token);\n"
-        }
-      },
-      "rank": "a00"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000014",
-      "name": "01-criar-cliente",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000012",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{administrativoUrl}}/administrativo/clientes",
-          "method": "POST",
-          "headers": [
-            {
-              "id": 1,
-              "key": "Content-Type",
-              "value": "application/json",
-              "isEnabled": true,
-              "description": ""
-            }
-          ],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "raw",
-            "raw": "{\n  \"nome\": \"Cliente Requestly {{runSuffix}}\",\n  \"email\": \"rq.{{runSuffix}}@oficina.dev\",\n  \"tipoDocumento\": \"Cpf\",\n  \"documento\": \"{{documentoCliente}}\"\n}",
-            "rawContentType": "application/json"
-          },
-          "contentType": "raw"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Criar cliente 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"clienteId\", String(j.id));\n"
-        }
-      },
-      "rank": "a01"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000015",
-      "name": "02-criar-veiculo",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000012",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{administrativoUrl}}/administrativo/veiculos",
-          "method": "POST",
-          "headers": [
-            {
-              "id": 1,
-              "key": "Content-Type",
-              "value": "application/json",
-              "isEnabled": true,
-              "description": ""
-            }
-          ],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "raw",
-            "raw": "{\n  \"placa\": \"{{placa}}\",\n  \"idCliente\": {{clienteId}},\n  \"modelo\": \"Onix\",\n  \"marca\": \"Chevrolet\"\n}",
-            "rawContentType": "application/json"
-          },
-          "contentType": "raw"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Criar veiculo 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"veiculoId\", String(j.id));\n"
-        }
-      },
-      "rank": "a02"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000016",
-      "name": "03-criar-servico",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000012",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{administrativoUrl}}/administrativo/servicos",
-          "method": "POST",
-          "headers": [
-            {
-              "id": 1,
-              "key": "Content-Type",
-              "value": "application/json",
-              "isEnabled": true,
-              "description": ""
-            }
-          ],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "raw",
-            "raw": "{\n  \"codigo\": \"{{codigoServico}}\",\n  \"nome\": \"Servico RQ {{runSuffix}}\",\n  \"precoPadrao\": 120.0,\n  \"ativo\": true\n}",
-            "rawContentType": "application/json"
-          },
-          "contentType": "raw"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Criar servico 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"servicoId\", String(j.id));\n"
-        }
-      },
-      "rank": "a03"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000017",
-      "name": "04-criar-item-estoque",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000012",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{estoqueUrl}}/estoque/itens",
-          "method": "POST",
-          "headers": [
-            {
-              "id": 1,
-              "key": "Content-Type",
-              "value": "application/json",
-              "isEnabled": true,
-              "description": ""
-            }
-          ],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "raw",
-            "raw": "{\n  \"codigo\": \"{{codigoItem}}\",\n  \"tipo\": \"Peca\",\n  \"nome\": \"Peca RQ {{runSuffix}}\",\n  \"unidadeMedida\": \"Unidade\",\n  \"precoVenda\": 45.9,\n  \"saldo\": 10,\n  \"saldoReservado\": 0\n}",
-            "rawContentType": "application/json"
-          },
-          "contentType": "raw"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Criar item 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"itemEstoqueId\", String(j.id));\n"
-        }
-      },
-      "rank": "a04"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000018",
-      "name": "05-criar-os",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000012",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico",
-          "method": "POST",
-          "headers": [
-            {
-              "id": 1,
-              "key": "Content-Type",
-              "value": "application/json",
-              "isEnabled": true,
-              "description": ""
-            }
-          ],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "raw",
-            "raw": "{\n  \"idVeiculo\": {{veiculoId}},\n  \"servicos\": [\n    {\n      \"idServico\": {{servicoId}},\n      \"valorCobrado\": 150,\n      \"itensNecessarios\": [\n        { \"idItemEstoque\": {{itemEstoqueId}}, \"quantidade\": 1 }\n      ]\n    }\n  ]\n}",
-            "rawContentType": "application/json"
-          },
-          "contentType": "raw"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Criar OS 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"ordemServicoId\", String(j.id));\n"
-        }
-      },
-      "rank": "a05"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000019",
-      "name": "06-assert-em-diagnostico",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000012",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
-          "method": "GET",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"GET OS retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Status da OS e EmDiagnostico\", function () {\n  rq.expect(jsonData.status).to.equal(\"EmDiagnostico\");\n});\nrq.test(\"Id da OS confere\", function () {\n  rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n});\n"
-        }
-      },
-      "rank": "a06"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-00000000001a",
-      "name": "07-finalizar-diagnostico",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000012",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/finalizar-diagnostico",
-          "method": "POST",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
-        }
-      },
-      "rank": "a07"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-00000000001b",
-      "name": "08-assert-aguardando-aprovacao",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000012",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
-          "method": "GET",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "preRequest": "var __t = Date.now(); while (Date.now() - __t < 3000) {}",
-          "postResponse": "rq.test(\"GET OS retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Status da OS e AguardandoAprovacao\", function () {\n  rq.expect(jsonData.status).to.equal(\"AguardandoAprovacao\");\n});\nrq.test(\"Id da OS confere\", function () {\n  rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n});\n"
-        }
-      },
-      "rank": "a08"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-00000000001c",
-      "name": "09-rejeitar",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000012",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/rejeitar",
-          "method": "POST",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
-        }
-      },
-      "rank": "a09"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-00000000001d",
-      "name": "10-assert-em-diagnostico",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000012",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
-          "method": "GET",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"GET OS retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Status da OS e EmDiagnostico\", function () {\n  rq.expect(jsonData.status).to.equal(\"EmDiagnostico\");\n});\nrq.test(\"Id da OS confere\", function () {\n  rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n});\n"
-        }
-      },
-      "rank": "a10"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-00000000001e",
-      "name": "11-descartar",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000012",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/descartar",
-          "method": "POST",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
-        }
-      },
-      "rank": "a11"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-00000000001f",
-      "name": "12-assert-descartada",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000012",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
-          "method": "GET",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"GET OS retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Status da OS e Descartada\", function () {\n  rq.expect(jsonData.status).to.equal(\"Descartada\");\n});\nrq.test(\"Id da OS confere\", function () {\n  rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n});\n"
-        }
-      },
-      "rank": "a12"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000020",
-      "name": "03-itens-em-falta-ate-liberada",
-      "type": "collection",
-      "parentId": "c2e20001-0000-4000-8000-000000000001",
-      "deleted": false,
-      "data": {
-        "auth": {
-          "type": "inherit"
-        }
-      },
-      "rank": "a02",
-      "description": "Item saldo 0 -> AguardandoPeca; entrada -> LiberadaParaExecucao. Espelha suite 05 do legado OS."
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000021",
-      "name": "00-login",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000020",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{autenticacaoUrl}}/autenticacao/login",
-          "method": "POST",
-          "headers": [
-            {
-              "id": 1,
-              "key": "Content-Type",
-              "value": "application/json",
-              "isEnabled": true,
-              "description": ""
-            }
-          ],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "raw",
-            "raw": "{\n  \"login\": \"admin\",\n  \"senha\": \"admin\"\n}",
-            "rawContentType": "application/json"
-          },
-          "contentType": "raw"
-        },
-        "auth": {
-          "type": "inherit"
-        },
-        "scripts": {
-          "preRequest": "var L = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\";\nfunction rL() { return L[Math.floor(Math.random() * 26)]; }\nfunction dig(nums, weights) {\n  var sum = 0;\n  for (var i = 0; i < weights.length; i++) sum += nums[i] * weights[i];\n  var mod = sum % 11;\n  return mod < 2 ? 0 : 11 - mod;\n}\nvar n = [];\nfor (var i = 0; i < 9; i++) n.push(Math.floor(Math.random() * 10));\nvar d1 = dig(n, [10, 9, 8, 7, 6, 5, 4, 3, 2]);\nvar d2 = dig(n.concat([d1]), [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]);\nrq.environment.set(\"documentoCliente\", n.join(\"\") + String(d1) + String(d2));\nrq.environment.set(\"placa\", rL() + rL() + rL() + String(Math.floor(Math.random() * 10)) + rL() + String(Math.floor(Math.random() * 10)) + String(Math.floor(Math.random() * 10)));\nvar codN = String(Math.floor(Math.random() * 1000));\nwhile (codN.length < 3) codN = \"0\" + codN;\nrq.environment.set(\"codigoServico\", rL() + rL() + rL() + \"-\" + codN);\nrq.environment.set(\"codigoItem\", rL() + rL() + rL() + \"-\" + codN);\nrq.environment.set(\"runSuffix\", String(Date.now()).slice(-6));\n",
-          "postResponse": "rq.test(\"Login retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Login retorna token\", function () {\n  rq.expect(jsonData).to.have.property(\"token\");\n  rq.expect(jsonData.token).to.be.a(\"string\").and.not.empty;\n});\nrq.environment.set(\"token\", jsonData.token);\n"
-        }
-      },
-      "rank": "a00"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000022",
-      "name": "01-criar-cliente",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000020",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{administrativoUrl}}/administrativo/clientes",
-          "method": "POST",
-          "headers": [
-            {
-              "id": 1,
-              "key": "Content-Type",
-              "value": "application/json",
-              "isEnabled": true,
-              "description": ""
-            }
-          ],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "raw",
-            "raw": "{\n  \"nome\": \"Cliente Requestly {{runSuffix}}\",\n  \"email\": \"rq.{{runSuffix}}@oficina.dev\",\n  \"tipoDocumento\": \"Cpf\",\n  \"documento\": \"{{documentoCliente}}\"\n}",
-            "rawContentType": "application/json"
-          },
-          "contentType": "raw"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Criar cliente 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"clienteId\", String(j.id));\n"
-        }
-      },
-      "rank": "a01"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000023",
-      "name": "02-criar-veiculo",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000020",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{administrativoUrl}}/administrativo/veiculos",
-          "method": "POST",
-          "headers": [
-            {
-              "id": 1,
-              "key": "Content-Type",
-              "value": "application/json",
-              "isEnabled": true,
-              "description": ""
-            }
-          ],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "raw",
-            "raw": "{\n  \"placa\": \"{{placa}}\",\n  \"idCliente\": {{clienteId}},\n  \"modelo\": \"Onix\",\n  \"marca\": \"Chevrolet\"\n}",
-            "rawContentType": "application/json"
-          },
-          "contentType": "raw"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Criar veiculo 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"veiculoId\", String(j.id));\n"
-        }
-      },
-      "rank": "a02"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000024",
-      "name": "03-criar-servico",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000020",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{administrativoUrl}}/administrativo/servicos",
-          "method": "POST",
-          "headers": [
-            {
-              "id": 1,
-              "key": "Content-Type",
-              "value": "application/json",
-              "isEnabled": true,
-              "description": ""
-            }
-          ],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "raw",
-            "raw": "{\n  \"codigo\": \"{{codigoServico}}\",\n  \"nome\": \"Servico RQ {{runSuffix}}\",\n  \"precoPadrao\": 120.0,\n  \"ativo\": true\n}",
-            "rawContentType": "application/json"
-          },
-          "contentType": "raw"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Criar servico 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"servicoId\", String(j.id));\n"
-        }
-      },
-      "rank": "a03"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000025",
-      "name": "04-criar-item-estoque",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000020",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{estoqueUrl}}/estoque/itens",
-          "method": "POST",
-          "headers": [
-            {
-              "id": 1,
-              "key": "Content-Type",
-              "value": "application/json",
-              "isEnabled": true,
-              "description": ""
-            }
-          ],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "raw",
-            "raw": "{\n  \"codigo\": \"{{codigoItem}}\",\n  \"tipo\": \"Peca\",\n  \"nome\": \"Peca zero RQ {{runSuffix}}\",\n  \"unidadeMedida\": \"Unidade\",\n  \"precoVenda\": 45.9,\n  \"saldo\": 0,\n  \"saldoReservado\": 0\n}",
-            "rawContentType": "application/json"
-          },
-          "contentType": "raw"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Criar item 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"itemEstoqueId\", String(j.id));\n"
-        }
-      },
-      "rank": "a04"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000026",
-      "name": "05-criar-os",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000020",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico",
-          "method": "POST",
-          "headers": [
-            {
-              "id": 1,
-              "key": "Content-Type",
-              "value": "application/json",
-              "isEnabled": true,
-              "description": ""
-            }
-          ],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "raw",
-            "raw": "{\n  \"idVeiculo\": {{veiculoId}},\n  \"servicos\": [\n    {\n      \"idServico\": {{servicoId}},\n      \"valorCobrado\": 150,\n      \"itensNecessarios\": [\n        { \"idItemEstoque\": {{itemEstoqueId}}, \"quantidade\": 1 }\n      ]\n    }\n  ]\n}",
-            "rawContentType": "application/json"
-          },
-          "contentType": "raw"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Criar OS 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"ordemServicoId\", String(j.id));\n"
-        }
-      },
-      "rank": "a05"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000027",
-      "name": "06-finalizar-diagnostico",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000020",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/finalizar-diagnostico",
-          "method": "POST",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
-        }
-      },
-      "rank": "a06"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000028",
-      "name": "07-assert-aguardando-aprovacao",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000020",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
-          "method": "GET",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "preRequest": "var __t = Date.now(); while (Date.now() - __t < 3000) {}",
-          "postResponse": "rq.test(\"GET OS retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Status da OS e AguardandoAprovacao\", function () {\n  rq.expect(jsonData.status).to.equal(\"AguardandoAprovacao\");\n});\nrq.test(\"Id da OS confere\", function () {\n  rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n});\n"
-        }
-      },
-      "rank": "a07"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000029",
-      "name": "08-aprovar",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000020",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/aprovar",
-          "method": "POST",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
-        }
-      },
-      "rank": "a08"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-00000000002a",
-      "name": "09-assert-aguardando-peca",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000020",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
-          "method": "GET",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "preRequest": "var __t = Date.now(); while (Date.now() - __t < 3000) {}",
-          "postResponse": "rq.test(\"GET OS retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Status da OS e AguardandoPeca\", function () {\n  rq.expect(jsonData.status).to.equal(\"AguardandoPeca\");\n});\nrq.test(\"Id da OS confere\", function () {\n  rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n});\n"
-        }
-      },
-      "rank": "a09"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-00000000002b",
-      "name": "10-registrar-entrada",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000020",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{estoqueUrl}}/estoque/itens/{{itemEstoqueId}}/registrar-entrada",
-          "method": "POST",
-          "headers": [
-            {
-              "id": 1,
-              "key": "Content-Type",
-              "value": "application/json",
-              "isEnabled": true,
-              "description": ""
-            }
-          ],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "raw",
-            "raw": "{\n  \"quantidade\": 5\n}",
-            "rawContentType": "application/json"
-          },
-          "contentType": "raw"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
-        }
-      },
-      "rank": "a10"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-00000000002c",
-      "name": "11-assert-liberada",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000020",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
-          "method": "GET",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "bearer_token",
-          "token": "{{token}}"
-        },
-        "scripts": {
-          "preRequest": "var __t = Date.now(); while (Date.now() - __t < 3000) {}\nvar __t2 = Date.now(); while (Date.now() - __t2 < 4000) {}",
-          "postResponse": "rq.test(\"GET OS retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Status da OS e LiberadaParaExecucao\", function () {\n  rq.expect(jsonData.status).to.equal(\"LiberadaParaExecucao\");\n});\nrq.test(\"Id da OS confere\", function () {\n  rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n});\n"
-        }
-      },
-      "rank": "a11"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-00000000002d",
-      "name": "04-contratos-borda",
-      "type": "collection",
-      "parentId": "c2e20001-0000-4000-8000-000000000001",
-      "deleted": false,
-      "data": {
-        "auth": {
-          "type": "inherit"
-        }
-      },
-      "rank": "a03",
-      "description": "Smoke: aprovar publico sem JWT (401), listagem sem JWT (401), JWKS. Espelha suite 08 do legado."
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-00000000002e",
-      "name": "00-aprovar-publico-sem-jwt",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-00000000002d",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico/aprovar?token=token-invalido",
-          "method": "POST",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "inherit"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Sem JWT retorna 401\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(401);\n});"
-        }
-      },
-      "rank": "a00"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-00000000002f",
-      "name": "01-listagem-sem-jwt",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-00000000002d",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{ordemServicoUrl}}/ordem-servico",
-          "method": "GET",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "inherit"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"Listagem sem JWT retorna 401\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(401);\n});"
-        }
-      },
-      "rank": "a01"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000030",
-      "name": "02-jwks",
-      "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-00000000002d",
-      "deleted": false,
-      "data": {
-        "type": "http",
-        "request": {
-          "url": "{{autenticacaoUrl}}/autenticacao/.well-known/jwks.json",
-          "method": "GET",
-          "headers": [],
-          "queryParams": [],
-          "pathVariables": [],
-          "body": {
-            "contentType": "none"
-          },
-          "contentType": "none"
-        },
-        "auth": {
-          "type": "inherit"
-        },
-        "scripts": {
-          "postResponse": "rq.test(\"JWKS 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar j = rq.response.json();\nrq.test(\"JWKS tem keys\", function () {\n  rq.expect(j).to.have.property(\"keys\");\n  rq.expect(j.keys.length).to.be.above(0);\n});\n"
-        }
-      },
-      "rank": "a02"
-    },
-    {
-      "id": "c2e20001-0000-4000-8000-000000000033",
+      "id": "4365216c-cacc-4b8e-8de3-3ecf3ad74ea6",
       "name": "13-wiremock-order-id",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -1521,7 +565,7 @@
           "type": "inherit"
         },
         "scripts": {
-          "preRequest": "var __t = Date.now(); while (Date.now() - __t < 3000) {}",
+          "preRequest": "",
           "postResponse": "rq.test(\"WireMock journal 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar journal = rq.response.json();\nvar ids = [];\n(journal.requests || []).forEach(function (entry) {\n  var req = entry.request || {};\n  var method = String(req.method || \"\").toUpperCase();\n  var url = String(req.url || \"\");\n  if (method !== \"POST\") return;\n  if (url.indexOf(\"/v1/orders\") < 0 || url.indexOf(\"/cancel\") >= 0) return;\n  var bodyText = entry.response && entry.response.body;\n  if (!bodyText) return;\n  try {\n    var body = typeof bodyText === \"string\" ? JSON.parse(bodyText) : bodyText;\n    if (body && body.id && ids.indexOf(body.id) < 0) ids.push(String(body.id));\n  } catch (e) {}\n});\nrq.test(\"WireMock registrou order id\", function () {\n  rq.expect(ids.length).to.be.above(0);\n});\nvar orderId = ids[0];\nrq.environment.set(\"dataId\", orderId);\nrq.environment.set(\"xRequestId\", \"req-requestly-e2e\");\n"
         }
       },
@@ -1529,10 +573,10 @@
       "description": "WireMock journal e newest-first; usa ids[0] (order mais recente), igual ao BDD."
     },
     {
-      "id": "c2e20001-0000-4000-8000-000000000034",
+      "id": "d2b95b53-cc87-4efc-9027-fbcf7e6b05a0",
       "name": "14-wiremock-stub-processed",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -1567,10 +611,10 @@
       "rank": "a14"
     },
     {
-      "id": "c2e20001-0000-4000-8000-000000000035",
+      "id": "981b7bc9-02ad-49eb-8bac-52a4fab41037",
       "name": "15-webhook-aprovado",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -1620,10 +664,10 @@
       "rank": "a15"
     },
     {
-      "id": "c2e20001-0000-4000-8000-000000000036",
+      "id": "eb19db7e-3c6c-408b-b17f-f83e35f4b64e",
       "name": "16-assert-entregue",
       "type": "api",
-      "parentId": "c2e20001-0000-4000-8000-000000000002",
+      "parentId": "81bf5a7b-6919-4595-b316-c8936426c831",
       "deleted": false,
       "data": {
         "type": "http",
@@ -1643,11 +687,2452 @@
           "token": "{{token}}"
         },
         "scripts": {
-          "preRequest": "var __t = Date.now(); while (Date.now() - __t < 5000) {}\nvar __t2 = Date.now(); while (Date.now() - __t2 < 5000) {}",
-          "postResponse": "rq.test(\"GET OS retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Status da OS e Entregue\", function () {\n  rq.expect(jsonData.status).to.equal(\"Entregue\");\n});\nrq.test(\"Id da OS confere\", function () {\n  rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n});\n"
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"Entregue\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
         }
       },
       "rank": "a16"
+    },
+    {
+      "id": "a6b7729f-6f04-4b1b-b6ab-4aabdcf632ea",
+      "name": "02-rejeicao-depois-descartar",
+      "type": "collection",
+      "parentId": "7f8ef2b5-523a-418e-a38f-aac4eee59e13",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a01",
+      "description": "Rejeita orcamento (volta EmDiagnostico) e descarta. Espelha suite 03 do legado OS."
+    },
+    {
+      "id": "2c3fed23-f4f1-469a-8037-752ea538d94c",
+      "name": "00-login",
+      "type": "api",
+      "parentId": "a6b7729f-6f04-4b1b-b6ab-4aabdcf632ea",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{autenticacaoUrl}}/autenticacao/login",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"login\": \"admin\",\n  \"senha\": \"admin\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "preRequest": "var L = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\";\nfunction rL() { return L[Math.floor(Math.random() * 26)]; }\nfunction dig(nums, weights) {\n  var sum = 0;\n  for (var i = 0; i < weights.length; i++) sum += nums[i] * weights[i];\n  var mod = sum % 11;\n  return mod < 2 ? 0 : 11 - mod;\n}\nvar n = [];\nfor (var i = 0; i < 9; i++) n.push(Math.floor(Math.random() * 10));\nvar d1 = dig(n, [10, 9, 8, 7, 6, 5, 4, 3, 2]);\nvar d2 = dig(n.concat([d1]), [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]);\nrq.environment.set(\"documentoCliente\", n.join(\"\") + String(d1) + String(d2));\nrq.environment.set(\"placa\", rL() + rL() + rL() + String(Math.floor(Math.random() * 10)) + rL() + String(Math.floor(Math.random() * 10)) + String(Math.floor(Math.random() * 10)));\nvar codN = String(Math.floor(Math.random() * 1000));\nwhile (codN.length < 3) codN = \"0\" + codN;\nrq.environment.set(\"codigoServico\", rL() + rL() + rL() + \"-\" + codN);\nrq.environment.set(\"codigoItem\", rL() + rL() + rL() + \"-\" + codN);\nrq.environment.set(\"runSuffix\", String(Date.now()).slice(-6));\n",
+          "postResponse": "rq.test(\"Login retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Login retorna token\", function () {\n  rq.expect(jsonData).to.have.property(\"token\");\n  rq.expect(jsonData.token).to.be.a(\"string\").and.not.empty;\n});\nrq.environment.set(\"token\", jsonData.token);\n"
+        }
+      },
+      "rank": "a00"
+    },
+    {
+      "id": "6aea60ed-4de6-49cb-be25-283ded40daf8",
+      "name": "01-criar-cliente",
+      "type": "api",
+      "parentId": "a6b7729f-6f04-4b1b-b6ab-4aabdcf632ea",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/clientes",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"nome\": \"Cliente Requestly {{runSuffix}}\",\n  \"email\": \"rq.{{runSuffix}}@oficina.dev\",\n  \"tipoDocumento\": \"Cpf\",\n  \"documento\": \"{{documentoCliente}}\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar cliente 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"clienteId\", String(j.id));\n"
+        }
+      },
+      "rank": "a01"
+    },
+    {
+      "id": "82fd6ab7-b82d-4ba5-ab30-59cfad4e7c6c",
+      "name": "02-criar-veiculo",
+      "type": "api",
+      "parentId": "a6b7729f-6f04-4b1b-b6ab-4aabdcf632ea",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/veiculos",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"placa\": \"{{placa}}\",\n  \"idCliente\": {{clienteId}},\n  \"modelo\": \"Onix\",\n  \"marca\": \"Chevrolet\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar veiculo 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"veiculoId\", String(j.id));\n"
+        }
+      },
+      "rank": "a02"
+    },
+    {
+      "id": "2b46753c-615d-4d88-8cb1-ed4ba33a8b7d",
+      "name": "03-criar-servico",
+      "type": "api",
+      "parentId": "a6b7729f-6f04-4b1b-b6ab-4aabdcf632ea",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/servicos",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"codigo\": \"{{codigoServico}}\",\n  \"nome\": \"Servico RQ {{runSuffix}}\",\n  \"precoPadrao\": 120.0,\n  \"ativo\": true\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar servico 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"servicoId\", String(j.id));\n"
+        }
+      },
+      "rank": "a03"
+    },
+    {
+      "id": "2c068359-06ad-498f-83ff-51b65b3e68bf",
+      "name": "04-criar-item-estoque",
+      "type": "api",
+      "parentId": "a6b7729f-6f04-4b1b-b6ab-4aabdcf632ea",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{estoqueUrl}}/estoque/itens",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"codigo\": \"{{codigoItem}}\",\n  \"tipo\": \"Peca\",\n  \"nome\": \"Peca RQ {{runSuffix}}\",\n  \"unidadeMedida\": \"Unidade\",\n  \"precoVenda\": 45.9,\n  \"saldo\": 10,\n  \"saldoReservado\": 0\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar item 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"itemEstoqueId\", String(j.id));\n"
+        }
+      },
+      "rank": "a04"
+    },
+    {
+      "id": "90439137-8816-4da4-87e2-2a55ff51519f",
+      "name": "05-criar-os",
+      "type": "api",
+      "parentId": "a6b7729f-6f04-4b1b-b6ab-4aabdcf632ea",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"idVeiculo\": {{veiculoId}},\n  \"servicos\": [\n    {\n      \"idServico\": {{servicoId}},\n      \"valorCobrado\": 150,\n      \"itensNecessarios\": [\n        { \"idItemEstoque\": {{itemEstoqueId}}, \"quantidade\": 1 }\n      ]\n    }\n  ]\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar OS 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"ordemServicoId\", String(j.id));\n"
+        }
+      },
+      "rank": "a05"
+    },
+    {
+      "id": "889974a3-7a67-4914-a625-573082da81da",
+      "name": "06-assert-em-diagnostico",
+      "type": "api",
+      "parentId": "a6b7729f-6f04-4b1b-b6ab-4aabdcf632ea",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"EmDiagnostico\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n",
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n"
+        }
+      },
+      "rank": "a06"
+    },
+    {
+      "id": "39b0d8bc-00db-475a-a46e-c289a6014bac",
+      "name": "07-finalizar-diagnostico",
+      "type": "api",
+      "parentId": "a6b7729f-6f04-4b1b-b6ab-4aabdcf632ea",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/finalizar-diagnostico",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a07"
+    },
+    {
+      "id": "b0efa2e3-482c-4b05-8783-76cda7a7d97f",
+      "name": "08-assert-aguardando-aprovacao",
+      "type": "api",
+      "parentId": "a6b7729f-6f04-4b1b-b6ab-4aabdcf632ea",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"AguardandoAprovacao\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
+        }
+      },
+      "rank": "a08"
+    },
+    {
+      "id": "ba40f7b9-07e2-412b-b646-211b7f0eb22c",
+      "name": "09-rejeitar",
+      "type": "api",
+      "parentId": "a6b7729f-6f04-4b1b-b6ab-4aabdcf632ea",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/rejeitar",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a09"
+    },
+    {
+      "id": "a8ee6b2e-c1b9-4b85-bd8e-72ca52132a0c",
+      "name": "10-assert-em-diagnostico",
+      "type": "api",
+      "parentId": "a6b7729f-6f04-4b1b-b6ab-4aabdcf632ea",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"EmDiagnostico\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n",
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n"
+        }
+      },
+      "rank": "a10"
+    },
+    {
+      "id": "caf49b83-b0cf-4597-aed5-c9ef17fd9c75",
+      "name": "11-descartar",
+      "type": "api",
+      "parentId": "a6b7729f-6f04-4b1b-b6ab-4aabdcf632ea",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/descartar",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a11"
+    },
+    {
+      "id": "8e30171f-b798-4fa2-a749-92226bc455c7",
+      "name": "12-assert-descartada",
+      "type": "api",
+      "parentId": "a6b7729f-6f04-4b1b-b6ab-4aabdcf632ea",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"Descartada\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n",
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n"
+        }
+      },
+      "rank": "a12"
+    },
+    {
+      "id": "e1eba131-37da-458d-af5d-31a55a02787f",
+      "name": "03-itens-em-falta-ate-liberada",
+      "type": "collection",
+      "parentId": "7f8ef2b5-523a-418e-a38f-aac4eee59e13",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a02",
+      "description": "Item saldo 0 -> AguardandoPeca; entrada -> LiberadaParaExecucao. Espelha suite 05 do legado OS."
+    },
+    {
+      "id": "e16246af-cb1f-4d4a-a45f-a1444ae2a5ba",
+      "name": "00-login",
+      "type": "api",
+      "parentId": "e1eba131-37da-458d-af5d-31a55a02787f",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{autenticacaoUrl}}/autenticacao/login",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"login\": \"admin\",\n  \"senha\": \"admin\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "preRequest": "var L = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\";\nfunction rL() { return L[Math.floor(Math.random() * 26)]; }\nfunction dig(nums, weights) {\n  var sum = 0;\n  for (var i = 0; i < weights.length; i++) sum += nums[i] * weights[i];\n  var mod = sum % 11;\n  return mod < 2 ? 0 : 11 - mod;\n}\nvar n = [];\nfor (var i = 0; i < 9; i++) n.push(Math.floor(Math.random() * 10));\nvar d1 = dig(n, [10, 9, 8, 7, 6, 5, 4, 3, 2]);\nvar d2 = dig(n.concat([d1]), [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]);\nrq.environment.set(\"documentoCliente\", n.join(\"\") + String(d1) + String(d2));\nrq.environment.set(\"placa\", rL() + rL() + rL() + String(Math.floor(Math.random() * 10)) + rL() + String(Math.floor(Math.random() * 10)) + String(Math.floor(Math.random() * 10)));\nvar codN = String(Math.floor(Math.random() * 1000));\nwhile (codN.length < 3) codN = \"0\" + codN;\nrq.environment.set(\"codigoServico\", rL() + rL() + rL() + \"-\" + codN);\nrq.environment.set(\"codigoItem\", rL() + rL() + rL() + \"-\" + codN);\nrq.environment.set(\"runSuffix\", String(Date.now()).slice(-6));\n",
+          "postResponse": "rq.test(\"Login retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Login retorna token\", function () {\n  rq.expect(jsonData).to.have.property(\"token\");\n  rq.expect(jsonData.token).to.be.a(\"string\").and.not.empty;\n});\nrq.environment.set(\"token\", jsonData.token);\n"
+        }
+      },
+      "rank": "a00"
+    },
+    {
+      "id": "eb57eeec-6a9a-4be7-a23d-3322e6f018d7",
+      "name": "01-criar-cliente",
+      "type": "api",
+      "parentId": "e1eba131-37da-458d-af5d-31a55a02787f",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/clientes",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"nome\": \"Cliente Requestly {{runSuffix}}\",\n  \"email\": \"rq.{{runSuffix}}@oficina.dev\",\n  \"tipoDocumento\": \"Cpf\",\n  \"documento\": \"{{documentoCliente}}\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar cliente 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"clienteId\", String(j.id));\n"
+        }
+      },
+      "rank": "a01"
+    },
+    {
+      "id": "0bb6bc22-5e92-4116-b8e7-30f6b230ec04",
+      "name": "02-criar-veiculo",
+      "type": "api",
+      "parentId": "e1eba131-37da-458d-af5d-31a55a02787f",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/veiculos",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"placa\": \"{{placa}}\",\n  \"idCliente\": {{clienteId}},\n  \"modelo\": \"Onix\",\n  \"marca\": \"Chevrolet\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar veiculo 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"veiculoId\", String(j.id));\n"
+        }
+      },
+      "rank": "a02"
+    },
+    {
+      "id": "204a7f17-8497-491b-9874-97a9b93b12a1",
+      "name": "03-criar-servico",
+      "type": "api",
+      "parentId": "e1eba131-37da-458d-af5d-31a55a02787f",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/servicos",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"codigo\": \"{{codigoServico}}\",\n  \"nome\": \"Servico RQ {{runSuffix}}\",\n  \"precoPadrao\": 120.0,\n  \"ativo\": true\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar servico 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"servicoId\", String(j.id));\n"
+        }
+      },
+      "rank": "a03"
+    },
+    {
+      "id": "15d890a9-21ad-4341-88f4-4aee13c9fcd2",
+      "name": "04-criar-item-estoque",
+      "type": "api",
+      "parentId": "e1eba131-37da-458d-af5d-31a55a02787f",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{estoqueUrl}}/estoque/itens",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"codigo\": \"{{codigoItem}}\",\n  \"tipo\": \"Peca\",\n  \"nome\": \"Peca zero RQ {{runSuffix}}\",\n  \"unidadeMedida\": \"Unidade\",\n  \"precoVenda\": 45.9,\n  \"saldo\": 0,\n  \"saldoReservado\": 0\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar item 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"itemEstoqueId\", String(j.id));\n"
+        }
+      },
+      "rank": "a04"
+    },
+    {
+      "id": "bb7a6a5f-0c8e-4b03-9557-754165792b61",
+      "name": "05-criar-os",
+      "type": "api",
+      "parentId": "e1eba131-37da-458d-af5d-31a55a02787f",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"idVeiculo\": {{veiculoId}},\n  \"servicos\": [\n    {\n      \"idServico\": {{servicoId}},\n      \"valorCobrado\": 150,\n      \"itensNecessarios\": [\n        { \"idItemEstoque\": {{itemEstoqueId}}, \"quantidade\": 1 }\n      ]\n    }\n  ]\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar OS 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"ordemServicoId\", String(j.id));\n"
+        }
+      },
+      "rank": "a05"
+    },
+    {
+      "id": "95bc9e00-b7e8-4f51-a7ea-0a5791ce0678",
+      "name": "06-finalizar-diagnostico",
+      "type": "api",
+      "parentId": "e1eba131-37da-458d-af5d-31a55a02787f",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/finalizar-diagnostico",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a06"
+    },
+    {
+      "id": "4093ba8f-4f42-4abd-8c54-cf0b8d8bebe9",
+      "name": "07-assert-aguardando-aprovacao",
+      "type": "api",
+      "parentId": "e1eba131-37da-458d-af5d-31a55a02787f",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"AguardandoAprovacao\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
+        }
+      },
+      "rank": "a07"
+    },
+    {
+      "id": "3b713a00-22f3-457e-8674-e11f9039547d",
+      "name": "08-aprovar",
+      "type": "api",
+      "parentId": "e1eba131-37da-458d-af5d-31a55a02787f",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/aprovar",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a08"
+    },
+    {
+      "id": "20811e95-eba6-4c23-9a49-dd738e43758c",
+      "name": "09-assert-aguardando-peca",
+      "type": "api",
+      "parentId": "e1eba131-37da-458d-af5d-31a55a02787f",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"AguardandoPeca\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
+        }
+      },
+      "rank": "a09"
+    },
+    {
+      "id": "a22b98bb-48ba-412f-b1ec-1d00227ba694",
+      "name": "10-registrar-entrada",
+      "type": "api",
+      "parentId": "e1eba131-37da-458d-af5d-31a55a02787f",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{estoqueUrl}}/estoque/itens/{{itemEstoqueId}}/registrar-entrada",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"quantidade\": 5\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a10"
+    },
+    {
+      "id": "af2bd2b2-fc20-4a42-b802-ce17a3ebab03",
+      "name": "11-assert-liberada",
+      "type": "api",
+      "parentId": "e1eba131-37da-458d-af5d-31a55a02787f",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"LiberadaParaExecucao\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
+        }
+      },
+      "rank": "a11"
+    },
+    {
+      "id": "30c5c11e-0229-43f0-a7b3-130c1ceba251",
+      "name": "04-contratos-borda",
+      "type": "collection",
+      "parentId": "7f8ef2b5-523a-418e-a38f-aac4eee59e13",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a03",
+      "description": "Smoke: aprovar publico sem JWT (401), listagem sem JWT (401), JWKS. Espelha suite 08 do legado."
+    },
+    {
+      "id": "b02d91e7-e3cc-4e9f-8be4-b263c2dc4ff4",
+      "name": "00-aprovar-publico-sem-jwt",
+      "type": "api",
+      "parentId": "30c5c11e-0229-43f0-a7b3-130c1ceba251",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/aprovar?token=token-invalido",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Sem JWT retorna 401\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(401);\n});"
+        }
+      },
+      "rank": "a00"
+    },
+    {
+      "id": "6250f31e-d17f-4bec-9277-3cd621c21631",
+      "name": "01-listagem-sem-jwt",
+      "type": "api",
+      "parentId": "30c5c11e-0229-43f0-a7b3-130c1ceba251",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Listagem sem JWT retorna 401\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(401);\n});"
+        }
+      },
+      "rank": "a01"
+    },
+    {
+      "id": "f68bad05-9b54-4ef8-9de7-27526bb27c76",
+      "name": "02-jwks",
+      "type": "api",
+      "parentId": "30c5c11e-0229-43f0-a7b3-130c1ceba251",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{autenticacaoUrl}}/autenticacao/.well-known/jwks.json",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"JWKS 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar j = rq.response.json();\nrq.test(\"JWKS tem keys\", function () {\n  rq.expect(j).to.have.property(\"keys\");\n  rq.expect(j.keys.length).to.be.above(0);\n});\n"
+        }
+      },
+      "rank": "a02"
+    },
+    {
+      "id": "ecd6e8e4-ab30-4e75-9761-d0a8eb0690f9",
+      "name": "01-staff-ate-aguardando-pagamento",
+      "type": "collection",
+      "parentId": "ada16cb2-8d3e-4f98-b07e-2bef72e0cc40",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a00",
+      "description": "Happy path staff ate AguardandoPagamento na GCP (Pub/Sub real). Sem WireMock/webhook local. Asserts de status: poll ate 3 min."
+    },
+    {
+      "id": "f9d2092b-95cd-4552-9f18-c18a21011fa2",
+      "name": "00-login",
+      "type": "api",
+      "parentId": "ecd6e8e4-ab30-4e75-9761-d0a8eb0690f9",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{autenticacaoUrl}}/autenticacao/login",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"login\": \"admin\",\n  \"senha\": \"admin\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "preRequest": "var L = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\";\nfunction rL() { return L[Math.floor(Math.random() * 26)]; }\nfunction dig(nums, weights) {\n  var sum = 0;\n  for (var i = 0; i < weights.length; i++) sum += nums[i] * weights[i];\n  var mod = sum % 11;\n  return mod < 2 ? 0 : 11 - mod;\n}\nvar n = [];\nfor (var i = 0; i < 9; i++) n.push(Math.floor(Math.random() * 10));\nvar d1 = dig(n, [10, 9, 8, 7, 6, 5, 4, 3, 2]);\nvar d2 = dig(n.concat([d1]), [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]);\nrq.environment.set(\"documentoCliente\", n.join(\"\") + String(d1) + String(d2));\nrq.environment.set(\"placa\", rL() + rL() + rL() + String(Math.floor(Math.random() * 10)) + rL() + String(Math.floor(Math.random() * 10)) + String(Math.floor(Math.random() * 10)));\nvar codN = String(Math.floor(Math.random() * 1000));\nwhile (codN.length < 3) codN = \"0\" + codN;\nrq.environment.set(\"codigoServico\", rL() + rL() + rL() + \"-\" + codN);\nrq.environment.set(\"codigoItem\", rL() + rL() + rL() + \"-\" + codN);\nrq.environment.set(\"runSuffix\", String(Date.now()).slice(-6));\n",
+          "postResponse": "rq.test(\"Login retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Login retorna token\", function () {\n  rq.expect(jsonData).to.have.property(\"token\");\n  rq.expect(jsonData.token).to.be.a(\"string\").and.not.empty;\n});\nrq.environment.set(\"token\", jsonData.token);\n"
+        }
+      },
+      "rank": "a00"
+    },
+    {
+      "id": "21e7f03a-a480-4c88-8c04-52bfaa3a52ca",
+      "name": "01-criar-cliente",
+      "type": "api",
+      "parentId": "ecd6e8e4-ab30-4e75-9761-d0a8eb0690f9",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/clientes",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"nome\": \"Cliente Requestly {{runSuffix}}\",\n  \"email\": \"rq.{{runSuffix}}@oficina.dev\",\n  \"tipoDocumento\": \"Cpf\",\n  \"documento\": \"{{documentoCliente}}\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar cliente 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"clienteId\", String(j.id));\n"
+        }
+      },
+      "rank": "a01"
+    },
+    {
+      "id": "71b70808-0110-4d63-89b3-60430864ac57",
+      "name": "02-criar-veiculo",
+      "type": "api",
+      "parentId": "ecd6e8e4-ab30-4e75-9761-d0a8eb0690f9",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/veiculos",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"placa\": \"{{placa}}\",\n  \"idCliente\": {{clienteId}},\n  \"modelo\": \"Onix\",\n  \"marca\": \"Chevrolet\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar veiculo 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"veiculoId\", String(j.id));\n"
+        }
+      },
+      "rank": "a02"
+    },
+    {
+      "id": "d5226063-6fbc-4d5f-9b48-f82a6ac4e92f",
+      "name": "03-criar-servico",
+      "type": "api",
+      "parentId": "ecd6e8e4-ab30-4e75-9761-d0a8eb0690f9",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/servicos",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"codigo\": \"{{codigoServico}}\",\n  \"nome\": \"Servico RQ {{runSuffix}}\",\n  \"precoPadrao\": 120.0,\n  \"ativo\": true\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar servico 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"servicoId\", String(j.id));\n"
+        }
+      },
+      "rank": "a03"
+    },
+    {
+      "id": "74546db5-dfc3-4289-a0d9-de5e498cc0d5",
+      "name": "04-criar-item-estoque",
+      "type": "api",
+      "parentId": "ecd6e8e4-ab30-4e75-9761-d0a8eb0690f9",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{estoqueUrl}}/estoque/itens",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"codigo\": \"{{codigoItem}}\",\n  \"tipo\": \"Peca\",\n  \"nome\": \"Peca RQ {{runSuffix}}\",\n  \"unidadeMedida\": \"Unidade\",\n  \"precoVenda\": 45.9,\n  \"saldo\": 10,\n  \"saldoReservado\": 0\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar item 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"itemEstoqueId\", String(j.id));\n"
+        }
+      },
+      "rank": "a04"
+    },
+    {
+      "id": "57312d3c-742c-423b-98db-020b0110c91c",
+      "name": "05-criar-os",
+      "type": "api",
+      "parentId": "ecd6e8e4-ab30-4e75-9761-d0a8eb0690f9",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"idVeiculo\": {{veiculoId}},\n  \"servicos\": [\n    {\n      \"idServico\": {{servicoId}},\n      \"valorCobrado\": 150,\n      \"itensNecessarios\": [\n        { \"idItemEstoque\": {{itemEstoqueId}}, \"quantidade\": 1 }\n      ]\n    }\n  ]\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar OS 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"ordemServicoId\", String(j.id));\nif (j.servicos && j.servicos[0]) { rq.environment.set(\"servicoLinhaId\", String(j.servicos[0].id)); }\n"
+        }
+      },
+      "rank": "a05"
+    },
+    {
+      "id": "fe37b438-0200-4ac4-b97a-200b90a49cbe",
+      "name": "06-assert-em-diagnostico",
+      "type": "api",
+      "parentId": "ecd6e8e4-ab30-4e75-9761-d0a8eb0690f9",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"EmDiagnostico\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n",
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n"
+        }
+      },
+      "rank": "a06"
+    },
+    {
+      "id": "283781e0-e100-4de9-a110-3647d102e2c6",
+      "name": "07-finalizar-diagnostico",
+      "type": "api",
+      "parentId": "ecd6e8e4-ab30-4e75-9761-d0a8eb0690f9",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/finalizar-diagnostico",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a07"
+    },
+    {
+      "id": "31c1bd0a-c0f3-4806-b2f4-cce232adc5fc",
+      "name": "08-assert-aguardando-aprovacao",
+      "type": "api",
+      "parentId": "ecd6e8e4-ab30-4e75-9761-d0a8eb0690f9",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"AguardandoAprovacao\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
+        }
+      },
+      "rank": "a08"
+    },
+    {
+      "id": "9d22ecd2-2f41-4343-9785-11074a3ba5b3",
+      "name": "09-aprovar",
+      "type": "api",
+      "parentId": "ecd6e8e4-ab30-4e75-9761-d0a8eb0690f9",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/aprovar",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a09"
+    },
+    {
+      "id": "7bcf0085-5874-4f12-bca9-3ac730d9efa6",
+      "name": "10-assert-liberada",
+      "type": "api",
+      "parentId": "ecd6e8e4-ab30-4e75-9761-d0a8eb0690f9",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"LiberadaParaExecucao\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n  var aprovados = (jsonData.servicos || []).filter(function (s) { return s.status === \"Aprovado\"; });\n  if (aprovados.length > 0) { rq.environment.set(\"servicoLinhaId\", String(aprovados[0].id)); }\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
+        }
+      },
+      "rank": "a10"
+    },
+    {
+      "id": "1b964a4f-a404-4a12-a7ae-ed19c39091b7",
+      "name": "11-confirmar-execucao",
+      "type": "api",
+      "parentId": "ecd6e8e4-ab30-4e75-9761-d0a8eb0690f9",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/confirmar-execucao",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"servicosExecutados\": [\n    {\n      \"idServico\": {{servicoLinhaId}},\n      \"iniciadoEm\": \"2026-11-11T10:00:00Z\",\n      \"finalizadoEm\": \"2026-11-11T12:00:00Z\"\n    }\n  ]\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a11"
+    },
+    {
+      "id": "5925080c-2700-470a-a961-9753ee54d1f4",
+      "name": "12-assert-aguardando-pagamento",
+      "type": "api",
+      "parentId": "ecd6e8e4-ab30-4e75-9761-d0a8eb0690f9",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"AguardandoPagamento\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
+        }
+      },
+      "rank": "a12"
+    },
+    {
+      "id": "ff45737b-ea7b-4e34-834b-8f2f34b62966",
+      "name": "02-rejeicao-depois-descartar",
+      "type": "collection",
+      "parentId": "ada16cb2-8d3e-4f98-b07e-2bef72e0cc40",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a01",
+      "description": "Rejeita orcamento (volta EmDiagnostico) e descarta. Espelha suite 03 do legado OS. GCP: poll 3 min nos asserts."
+    },
+    {
+      "id": "0ff190b6-add6-4df7-bfb3-0dce72c8c971",
+      "name": "00-login",
+      "type": "api",
+      "parentId": "ff45737b-ea7b-4e34-834b-8f2f34b62966",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{autenticacaoUrl}}/autenticacao/login",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"login\": \"admin\",\n  \"senha\": \"admin\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "preRequest": "var L = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\";\nfunction rL() { return L[Math.floor(Math.random() * 26)]; }\nfunction dig(nums, weights) {\n  var sum = 0;\n  for (var i = 0; i < weights.length; i++) sum += nums[i] * weights[i];\n  var mod = sum % 11;\n  return mod < 2 ? 0 : 11 - mod;\n}\nvar n = [];\nfor (var i = 0; i < 9; i++) n.push(Math.floor(Math.random() * 10));\nvar d1 = dig(n, [10, 9, 8, 7, 6, 5, 4, 3, 2]);\nvar d2 = dig(n.concat([d1]), [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]);\nrq.environment.set(\"documentoCliente\", n.join(\"\") + String(d1) + String(d2));\nrq.environment.set(\"placa\", rL() + rL() + rL() + String(Math.floor(Math.random() * 10)) + rL() + String(Math.floor(Math.random() * 10)) + String(Math.floor(Math.random() * 10)));\nvar codN = String(Math.floor(Math.random() * 1000));\nwhile (codN.length < 3) codN = \"0\" + codN;\nrq.environment.set(\"codigoServico\", rL() + rL() + rL() + \"-\" + codN);\nrq.environment.set(\"codigoItem\", rL() + rL() + rL() + \"-\" + codN);\nrq.environment.set(\"runSuffix\", String(Date.now()).slice(-6));\n",
+          "postResponse": "rq.test(\"Login retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Login retorna token\", function () {\n  rq.expect(jsonData).to.have.property(\"token\");\n  rq.expect(jsonData.token).to.be.a(\"string\").and.not.empty;\n});\nrq.environment.set(\"token\", jsonData.token);\n"
+        }
+      },
+      "rank": "a00"
+    },
+    {
+      "id": "a19b84f2-57dc-4d9a-92d1-00ac8ef173f2",
+      "name": "01-criar-cliente",
+      "type": "api",
+      "parentId": "ff45737b-ea7b-4e34-834b-8f2f34b62966",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/clientes",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"nome\": \"Cliente Requestly {{runSuffix}}\",\n  \"email\": \"rq.{{runSuffix}}@oficina.dev\",\n  \"tipoDocumento\": \"Cpf\",\n  \"documento\": \"{{documentoCliente}}\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar cliente 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"clienteId\", String(j.id));\n"
+        }
+      },
+      "rank": "a01"
+    },
+    {
+      "id": "70d8423d-067e-46e4-bce6-8e826a9c3a62",
+      "name": "02-criar-veiculo",
+      "type": "api",
+      "parentId": "ff45737b-ea7b-4e34-834b-8f2f34b62966",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/veiculos",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"placa\": \"{{placa}}\",\n  \"idCliente\": {{clienteId}},\n  \"modelo\": \"Onix\",\n  \"marca\": \"Chevrolet\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar veiculo 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"veiculoId\", String(j.id));\n"
+        }
+      },
+      "rank": "a02"
+    },
+    {
+      "id": "07cb1ec5-ae9a-4229-8e89-564e197f1240",
+      "name": "03-criar-servico",
+      "type": "api",
+      "parentId": "ff45737b-ea7b-4e34-834b-8f2f34b62966",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/servicos",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"codigo\": \"{{codigoServico}}\",\n  \"nome\": \"Servico RQ {{runSuffix}}\",\n  \"precoPadrao\": 120.0,\n  \"ativo\": true\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar servico 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"servicoId\", String(j.id));\n"
+        }
+      },
+      "rank": "a03"
+    },
+    {
+      "id": "12e4569e-6907-4e96-8afb-a0c551563a12",
+      "name": "04-criar-item-estoque",
+      "type": "api",
+      "parentId": "ff45737b-ea7b-4e34-834b-8f2f34b62966",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{estoqueUrl}}/estoque/itens",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"codigo\": \"{{codigoItem}}\",\n  \"tipo\": \"Peca\",\n  \"nome\": \"Peca RQ {{runSuffix}}\",\n  \"unidadeMedida\": \"Unidade\",\n  \"precoVenda\": 45.9,\n  \"saldo\": 10,\n  \"saldoReservado\": 0\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar item 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"itemEstoqueId\", String(j.id));\n"
+        }
+      },
+      "rank": "a04"
+    },
+    {
+      "id": "11058677-ed34-4c50-8f8d-7a7f00b8a3c1",
+      "name": "05-criar-os",
+      "type": "api",
+      "parentId": "ff45737b-ea7b-4e34-834b-8f2f34b62966",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"idVeiculo\": {{veiculoId}},\n  \"servicos\": [\n    {\n      \"idServico\": {{servicoId}},\n      \"valorCobrado\": 150,\n      \"itensNecessarios\": [\n        { \"idItemEstoque\": {{itemEstoqueId}}, \"quantidade\": 1 }\n      ]\n    }\n  ]\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar OS 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"ordemServicoId\", String(j.id));\n"
+        }
+      },
+      "rank": "a05"
+    },
+    {
+      "id": "471b7f87-6454-457f-a688-8332b4880247",
+      "name": "06-assert-em-diagnostico",
+      "type": "api",
+      "parentId": "ff45737b-ea7b-4e34-834b-8f2f34b62966",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"EmDiagnostico\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n",
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n"
+        }
+      },
+      "rank": "a06"
+    },
+    {
+      "id": "b8ec0ae0-41f0-4d82-8b64-cf4088017639",
+      "name": "07-finalizar-diagnostico",
+      "type": "api",
+      "parentId": "ff45737b-ea7b-4e34-834b-8f2f34b62966",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/finalizar-diagnostico",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a07"
+    },
+    {
+      "id": "519e6073-fe8d-4418-b353-d2dc754ef652",
+      "name": "08-assert-aguardando-aprovacao",
+      "type": "api",
+      "parentId": "ff45737b-ea7b-4e34-834b-8f2f34b62966",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"AguardandoAprovacao\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
+        }
+      },
+      "rank": "a08"
+    },
+    {
+      "id": "136133cc-331a-4025-add4-d1469ab822f7",
+      "name": "09-rejeitar",
+      "type": "api",
+      "parentId": "ff45737b-ea7b-4e34-834b-8f2f34b62966",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/rejeitar",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a09"
+    },
+    {
+      "id": "aa28becd-bc38-4c60-afad-e59632d0fe7c",
+      "name": "10-assert-em-diagnostico",
+      "type": "api",
+      "parentId": "ff45737b-ea7b-4e34-834b-8f2f34b62966",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"EmDiagnostico\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n",
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n"
+        }
+      },
+      "rank": "a10"
+    },
+    {
+      "id": "64f9adc1-3992-4a18-8dd6-a6b11fb43e9c",
+      "name": "11-descartar",
+      "type": "api",
+      "parentId": "ff45737b-ea7b-4e34-834b-8f2f34b62966",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/descartar",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a11"
+    },
+    {
+      "id": "a7609804-c75c-43a1-9f2c-138948ab9a08",
+      "name": "12-assert-descartada",
+      "type": "api",
+      "parentId": "ff45737b-ea7b-4e34-834b-8f2f34b62966",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"Descartada\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n",
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n"
+        }
+      },
+      "rank": "a12"
+    },
+    {
+      "id": "1be5d6f6-cdcc-4063-84be-bb60e39467c7",
+      "name": "03-itens-em-falta-ate-liberada",
+      "type": "collection",
+      "parentId": "ada16cb2-8d3e-4f98-b07e-2bef72e0cc40",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a02",
+      "description": "Item saldo 0 -> AguardandoPeca; entrada -> LiberadaParaExecucao. Espelha suite 05 do legado OS. GCP: poll 3 min nos asserts."
+    },
+    {
+      "id": "0d28b67b-bbf8-4f30-a737-86b18b984665",
+      "name": "00-login",
+      "type": "api",
+      "parentId": "1be5d6f6-cdcc-4063-84be-bb60e39467c7",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{autenticacaoUrl}}/autenticacao/login",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"login\": \"admin\",\n  \"senha\": \"admin\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "preRequest": "var L = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\";\nfunction rL() { return L[Math.floor(Math.random() * 26)]; }\nfunction dig(nums, weights) {\n  var sum = 0;\n  for (var i = 0; i < weights.length; i++) sum += nums[i] * weights[i];\n  var mod = sum % 11;\n  return mod < 2 ? 0 : 11 - mod;\n}\nvar n = [];\nfor (var i = 0; i < 9; i++) n.push(Math.floor(Math.random() * 10));\nvar d1 = dig(n, [10, 9, 8, 7, 6, 5, 4, 3, 2]);\nvar d2 = dig(n.concat([d1]), [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]);\nrq.environment.set(\"documentoCliente\", n.join(\"\") + String(d1) + String(d2));\nrq.environment.set(\"placa\", rL() + rL() + rL() + String(Math.floor(Math.random() * 10)) + rL() + String(Math.floor(Math.random() * 10)) + String(Math.floor(Math.random() * 10)));\nvar codN = String(Math.floor(Math.random() * 1000));\nwhile (codN.length < 3) codN = \"0\" + codN;\nrq.environment.set(\"codigoServico\", rL() + rL() + rL() + \"-\" + codN);\nrq.environment.set(\"codigoItem\", rL() + rL() + rL() + \"-\" + codN);\nrq.environment.set(\"runSuffix\", String(Date.now()).slice(-6));\n",
+          "postResponse": "rq.test(\"Login retorna 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Login retorna token\", function () {\n  rq.expect(jsonData).to.have.property(\"token\");\n  rq.expect(jsonData.token).to.be.a(\"string\").and.not.empty;\n});\nrq.environment.set(\"token\", jsonData.token);\n"
+        }
+      },
+      "rank": "a00"
+    },
+    {
+      "id": "12dce24c-f633-4291-9e43-45e45a78898a",
+      "name": "01-criar-cliente",
+      "type": "api",
+      "parentId": "1be5d6f6-cdcc-4063-84be-bb60e39467c7",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/clientes",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"nome\": \"Cliente Requestly {{runSuffix}}\",\n  \"email\": \"rq.{{runSuffix}}@oficina.dev\",\n  \"tipoDocumento\": \"Cpf\",\n  \"documento\": \"{{documentoCliente}}\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar cliente 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"clienteId\", String(j.id));\n"
+        }
+      },
+      "rank": "a01"
+    },
+    {
+      "id": "a30b2a81-3723-4803-88c9-89da27e24ccb",
+      "name": "02-criar-veiculo",
+      "type": "api",
+      "parentId": "1be5d6f6-cdcc-4063-84be-bb60e39467c7",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/veiculos",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"placa\": \"{{placa}}\",\n  \"idCliente\": {{clienteId}},\n  \"modelo\": \"Onix\",\n  \"marca\": \"Chevrolet\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar veiculo 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"veiculoId\", String(j.id));\n"
+        }
+      },
+      "rank": "a02"
+    },
+    {
+      "id": "cddd96bc-d209-4b3f-b03b-8f5413eb42cc",
+      "name": "03-criar-servico",
+      "type": "api",
+      "parentId": "1be5d6f6-cdcc-4063-84be-bb60e39467c7",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{administrativoUrl}}/administrativo/servicos",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"codigo\": \"{{codigoServico}}\",\n  \"nome\": \"Servico RQ {{runSuffix}}\",\n  \"precoPadrao\": 120.0,\n  \"ativo\": true\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar servico 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"servicoId\", String(j.id));\n"
+        }
+      },
+      "rank": "a03"
+    },
+    {
+      "id": "b4eae34b-40ae-47dd-a660-529adb2c91b0",
+      "name": "04-criar-item-estoque",
+      "type": "api",
+      "parentId": "1be5d6f6-cdcc-4063-84be-bb60e39467c7",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{estoqueUrl}}/estoque/itens",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"codigo\": \"{{codigoItem}}\",\n  \"tipo\": \"Peca\",\n  \"nome\": \"Peca zero RQ {{runSuffix}}\",\n  \"unidadeMedida\": \"Unidade\",\n  \"precoVenda\": 45.9,\n  \"saldo\": 0,\n  \"saldoReservado\": 0\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar item 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"itemEstoqueId\", String(j.id));\n"
+        }
+      },
+      "rank": "a04"
+    },
+    {
+      "id": "86a1e0a7-c6ac-466c-924b-80af0617d27b",
+      "name": "05-criar-os",
+      "type": "api",
+      "parentId": "1be5d6f6-cdcc-4063-84be-bb60e39467c7",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"idVeiculo\": {{veiculoId}},\n  \"servicos\": [\n    {\n      \"idServico\": {{servicoId}},\n      \"valorCobrado\": 150,\n      \"itensNecessarios\": [\n        { \"idItemEstoque\": {{itemEstoqueId}}, \"quantidade\": 1 }\n      ]\n    }\n  ]\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Criar OS 201\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(201);\n});\nvar j = rq.response.json();\nrq.environment.set(\"ordemServicoId\", String(j.id));\n"
+        }
+      },
+      "rank": "a05"
+    },
+    {
+      "id": "3159e4fe-978b-400d-b3ea-cd561c953a3e",
+      "name": "06-finalizar-diagnostico",
+      "type": "api",
+      "parentId": "1be5d6f6-cdcc-4063-84be-bb60e39467c7",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/finalizar-diagnostico",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a06"
+    },
+    {
+      "id": "da387f09-ab70-45a4-9bd6-21d91583318d",
+      "name": "07-assert-aguardando-aprovacao",
+      "type": "api",
+      "parentId": "1be5d6f6-cdcc-4063-84be-bb60e39467c7",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"AguardandoAprovacao\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
+        }
+      },
+      "rank": "a07"
+    },
+    {
+      "id": "7a3daebd-ffa0-48ad-aa2a-31c4e34cc513",
+      "name": "08-aprovar",
+      "type": "api",
+      "parentId": "1be5d6f6-cdcc-4063-84be-bb60e39467c7",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}/aprovar",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a08"
+    },
+    {
+      "id": "58baa18a-cb42-47dc-97db-7146ef28f6c3",
+      "name": "09-assert-aguardando-peca",
+      "type": "api",
+      "parentId": "1be5d6f6-cdcc-4063-84be-bb60e39467c7",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"AguardandoPeca\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
+        }
+      },
+      "rank": "a09"
+    },
+    {
+      "id": "b4fdc66a-fd34-4c6f-a70a-51777f334d5f",
+      "name": "10-registrar-entrada",
+      "type": "api",
+      "parentId": "1be5d6f6-cdcc-4063-84be-bb60e39467c7",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{estoqueUrl}}/estoque/itens/{{itemEstoqueId}}/registrar-entrada",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"quantidade\": 5\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Transicao retorna sucesso\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.be.oneOf([200, 201, 204]);\n});"
+        }
+      },
+      "rank": "a10"
+    },
+    {
+      "id": "8aed8a08-0f6a-4354-bf5b-5f641f50782f",
+      "name": "11-assert-liberada",
+      "type": "api",
+      "parentId": "1be5d6f6-cdcc-4063-84be-bb60e39467c7",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/{{ordemServicoId}}",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "bearer_token",
+          "token": "{{token}}"
+        },
+        "scripts": {
+          "preRequest": "var __deadline = rq.environment.get(\"__pollDeadline\");\nif (__deadline) {\n  var __t = Date.now();\n  while (Date.now() - __t < 5000) {}\n}\n",
+          "postResponse": "var __code = (rq.response.code != null ? rq.response.code : rq.response.status);\nrq.test(\"GET OS retorna 200\", function () {\n  rq.expect(__code).to.equal(200);\n});\nvar jsonData = rq.response.json();\nvar __expected = \"LiberadaParaExecucao\";\nvar __deadline = Number(rq.environment.get(\"__pollDeadline\") || \"0\");\nif (!__deadline) {\n  __deadline = Date.now() + 180000;\n  rq.environment.set(\"__pollDeadline\", String(__deadline));\n}\nif (jsonData.status === __expected) {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected, function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n} else if (Date.now() < __deadline) {\n  console.log(\"poll status=\" + jsonData.status + \" want=\" + __expected + \" msLeft=\" + (__deadline - Date.now()));\n  rq.execution.setNextRequest(rq.execution.location.current);\n} else {\n  rq.environment.set(\"__pollDeadline\", \"\");\n  rq.test(\"Status da OS e \" + __expected + \" (timeout 3m)\", function () {\n    rq.expect(jsonData.status).to.equal(__expected);\n  });\n  rq.test(\"Id da OS confere\", function () {\n    rq.expect(jsonData.id).to.equal(Number(rq.environment.get(\"ordemServicoId\")));\n  });\n}\n"
+        }
+      },
+      "rank": "a11"
+    },
+    {
+      "id": "6693ddb2-65e3-43ff-a622-7c82d00ba69d",
+      "name": "04-contratos-borda",
+      "type": "collection",
+      "parentId": "ada16cb2-8d3e-4f98-b07e-2bef72e0cc40",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a03",
+      "description": "Smoke: aprovar publico sem JWT (401), listagem sem JWT (401), JWKS. Espelha suite 08 do legado."
+    },
+    {
+      "id": "7c3b893e-fab9-4265-b368-203981e385c7",
+      "name": "00-aprovar-publico-sem-jwt",
+      "type": "api",
+      "parentId": "6693ddb2-65e3-43ff-a622-7c82d00ba69d",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico/aprovar?token=token-invalido",
+          "method": "POST",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Sem JWT retorna 401\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(401);\n});"
+        }
+      },
+      "rank": "a00"
+    },
+    {
+      "id": "36dc6103-5307-4dfe-aa66-91bfceec6291",
+      "name": "01-listagem-sem-jwt",
+      "type": "api",
+      "parentId": "6693ddb2-65e3-43ff-a622-7c82d00ba69d",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{ordemServicoUrl}}/ordem-servico",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Listagem sem JWT retorna 401\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(401);\n});"
+        }
+      },
+      "rank": "a01"
+    },
+    {
+      "id": "9c8de627-c956-46f1-8cab-4b8dff19deda",
+      "name": "02-jwks",
+      "type": "api",
+      "parentId": "6693ddb2-65e3-43ff-a622-7c82d00ba69d",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{autenticacaoUrl}}/autenticacao/.well-known/jwks.json",
+          "method": "GET",
+          "headers": [],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "none"
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"JWKS 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar j = rq.response.json();\nrq.test(\"JWKS tem keys\", function () {\n  rq.expect(j).to.have.property(\"keys\");\n  rq.expect(j.keys.length).to.be.above(0);\n});\n"
+        }
+      },
+      "rank": "a02"
     }
   ],
   "environments": [
