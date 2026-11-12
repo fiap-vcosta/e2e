@@ -8,7 +8,7 @@ public sealed class SagaContext
     public int VeiculoId { get; set; }
     public int ServicoCatalogoId { get; set; }
     public int ItemEstoqueId { get; set; }
-    public int OrdemServicoId { get; set; }
+    public Guid OrdemServicoId { get; set; }
     public int ServicoLinhaId { get; set; }
     public string CobrancaId { get; set; } = string.Empty;
     public string CobrancaIdAnterior { get; set; } = string.Empty;

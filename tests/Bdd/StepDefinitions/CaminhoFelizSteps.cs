@@ -115,7 +115,7 @@ public sealed class CaminhoFelizSteps(JsonHttp http, SagaContext ctx)
                     }
                 }
             });
-        ctx.OrdemServicoId = created.GetProperty("id").GetInt32();
+        ctx.OrdemServicoId = created.GetProperty("id").GetGuid();
         ctx.ServicoLinhaId = created.GetProperty("servicos")[0].GetProperty("id").GetInt32();
     }
 
