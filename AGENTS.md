@@ -25,6 +25,7 @@ Compose do sistema, testes de ponta a ponta (Reqnroll), collections HTTP e diagr
 | `scripts/gh-dispatch-wait.sh` | Dispara um workflow e espera o run (`POLL_SECONDS=20`) |
 | `docs/requestly/` | Collection exploratória + suites e2e Requestly; environments Docker / GCP-Gateway |
 | `docs/arquitetura.md` | Diagrama Mermaid de componentes (GCP + compose); Saga em `docs/saga.md` |
+| `docs/adrs/` | ADRs de sistema (ex. 1 Cloud SQL por serviço SQL) |
 
 ## Fora de escopo
 
