@@ -1,19 +1,36 @@
 # e2e
 
-Compose do sistema, testes de ponta a ponta e collections HTTP. Este repositório não contém código de serviço. Org [fiap-vcosta](https://github.com/fiap-vcosta).
+Compose do sistema, testes de ponta a ponta (Reqnroll), collections HTTP e documentação transversal da oficina. Este repositório **não** contém código de microsserviço. Org [fiap-vcosta](https://github.com/fiap-vcosta).
 
-Contrato entre os serviços:
+## Por que Saga coreografada
+
+O fluxo da OS atravessa orçamento, estoque e pagamento em **serviços e bancos separados**. Em vez de um orquestrador central, cada serviço **reage a eventos** Pub/Sub e publica o próximo passo (Saga **coreografada**): a OS permanece dona do status visível; orçamento e estoque compensam falhas e descartes pelos contratos em [docs/saga.md](docs/saga.md). Justificativa formal: [ADR 004](docs/adrs/004-saga-coreografada.md).
+
+## CI automático × nuvem manual (custo)
+
+| Fluxo | Automático? | Onde |
+|-------|-------------|------|
+| Lint, testes, Sonar, `terraform fmt`/`validate` | **Sim** (PR/push) | Cada repo + reusable [`actions`](https://github.com/fiap-vcosta/actions) |
+| Build + push da imagem (Artifact Registry) | **Sim** (merge `main`) | Cada serviço |
+| `tf-apply` / `tf-destroy` / `deploy` | **Manual** (`workflow_dispatch`) | Infra e serviços |
+| `demo-up` / `demo-down` | **Manual** | Este repo (orquestra a janela) |
+
+GKE, Cloud SQL, LB e sidecars Datadog **só sobem na janela de demo**. Não há CD automático em todo merge para não manter custo GCP no trabalho contínuo. Detalhe: [ADR 006](docs/adrs/006-deploy-demo-manuais-custo.md).
+
+## Contratos e docs
 
 - [Arquitetura](docs/arquitetura.md)
 - [Eventos](docs/eventos.md)
 - [Saga](docs/saga.md)
 - [HTTP](docs/contratos-http.md)
+- [Domínio (linguagem + modelo por serviço)](docs/dominio/)
+- [ADRs do sistema](docs/adrs/)
 - [Requestly do sistema](docs/requestly/)
-- [ADR: 1 Cloud SQL por serviço SQL](docs/adrs/001-instancia-cloud-sql-por-servico.md)
+- [Datadog (Saga)](docs/datadog/)
 
 ## Compose local (imagens do Artifact Registry)
 
-Sobe os cinco serviços com **imagens já publicadas** no Artifact Registry, mais Postgres (3 databases), emuladores Firestore/Pub/Sub e WireMock (fake do Mercado Pago Orders — P14).
+Sobe os cinco serviços com **imagens já publicadas** no Artifact Registry, mais Postgres (3 databases), emuladores Firestore/Pub/Sub e WireMock (fake da API Mercado Pago Orders).
 
 | Host | Serviço |
 |------|---------|
@@ -66,7 +83,7 @@ Login staff (seed idempotente): `POST /autenticacao/login` com `admin` / `admin`
 # volume do Postgres: ./scripts/compose.sh down -v
 ```
 
-### BDD Reqnroll (caminho feliz)
+### BDD Reqnroll
 
 Com o compose no ar:
 
@@ -85,7 +102,7 @@ Workflow [`ci.yml`](.github/workflows/ci.yml) (PR / push `main` / manual): WIF �
 
 ### Requestly
 
-[`docs/requestly/`](docs/requestly/): exploratória (`sistema.requestly.json`) e suites e2e (`sistema-e2e-tests.requestly.json`, Collection Runner) em pastas **`docker/`** e **`gcp/`**. Environments **Docker** / **GCP-Gateway**. Asserts de status fazem poll até 3 min; na GCP o happy path para em `AguardandoPagamento` (sem WireMock).
+[`docs/requestly/`](docs/requestly/): exploratória (`sistema.requestly.json`) e suites e2e (`sistema-e2e-tests.requestly.json`, Collection Runner) em pastas **`docker/`** e **`gcp/`**. Environments **Docker** / **GCP-Gateway**. Asserts de status fazem poll até 3 min; na GCP o happy path para em `AguardandoPagamento` (sem WireMock). Collections legadas com paths `/api/…` em outros repos estão obsoletas — use as daqui.
 
 ## Stress HPA (`ordem-servico-service`)
 
@@ -104,14 +121,14 @@ Observar no cluster: `watch -n 2 kubectl get hpa,pods -n tech-challenge`. Não r
 
 ## Janela GCP (`demo-up` / `demo-down`)
 
-Workflows manuais que disparam, via `gh`, os `tf-apply` / `tf-destroy` / `deploy` dos outros repos e esperam o resultado.
+Workflows **manuais** que disparam, via `gh`, os `tf-apply` / `tf-destroy` / `deploy` dos outros repos e esperam o resultado. Uso sob demanda para controlar custo (ver [ADR 006](docs/adrs/006-deploy-demo-manuais-custo.md)).
 
 | Workflow | Caixas na UI (reusable + matrix) |
 |----------|----------------------------------|
 | [`demo-up`](.github/workflows/demo-up.yml) | **infra** (`infra-k8s` ∥ `infra-events`) → **tf-servicos** (inclui 3 Cloud SQL) → **deploy** |
 | [`demo-down`](.github/workflows/demo-down.yml) | **k8s** (`infra-k8s`) → **tf-servicos** → **infra** (`infra-events`) |
 
-Fases em `demo-phase-*.yml`. Serviços hoje: **`administrativo-service`**, **`autenticacao-service`**, **`estoque-service`**, **`orcamento-service`**, **`ordem-servico-service`**.
+Fases em `demo-phase-*.yml`. Serviços: **`administrativo-service`**, **`autenticacao-service`**, **`estoque-service`**, **`orcamento-service`**, **`ordem-servico-service`**.
 
 O `gh run watch` usa intervalo de **20s** (`POLL_SECONDS`).
 
