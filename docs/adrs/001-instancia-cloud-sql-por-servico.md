@@ -6,9 +6,9 @@
 
 ## 1. Contexto e Problema
 
-Na Fase 04 a instância PostgreSQL era compartilhada (`infra-db`, `tech-challenge-pg`), com um database/usuário por serviço SQL e isolamento lógico (`REVOKE CONNECT` / role NOLOGIN). O enunciado pede banco próprio por microsserviço; isolamento lógico não basta para a narrativa da entrega.
+Antes desta decisão, a instância PostgreSQL era compartilhada no repositório arquivado `infra-db` (`tech-challenge-pg`), com um database/usuário por serviço SQL e isolamento lógico (`REVOKE CONNECT` / role NOLOGIN). O enunciado pede banco próprio por microsserviço; isolamento lógico não basta para a narrativa da entrega.
 
-Serviços SQL: `administrativo-service`, `estoque-service`, `ordem-servico-service`. Firestore já é database nomeado por serviço (`orcamento`, `autenticacao`).
+Serviços SQL: `administrativo-service`, `estoque-service`, `ordem-servico-service`. Firestore já era database nomeado por serviço (`orcamento`, `autenticacao`) — ver [ADR 002](002-firestore-databases-nomeados.md).
 
 O problema a ser resolvido é: **Como provisionar PostgreSQL na GCP com banco próprio por serviço, custo baixo na janela de demo e dono claro no Git?**
 

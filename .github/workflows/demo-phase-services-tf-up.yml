@@ -18,7 +18,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Acrescentar conforme checklist §14
         repo:
           - administrativo-service
           - autenticacao-service

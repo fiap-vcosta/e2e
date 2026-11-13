@@ -1,6 +1,6 @@
 # Arquitetura do sistema
 
-Visão dos componentes da oficina na GCP e no compose local. Contratos: [HTTP](contratos-http.md), [eventos](eventos.md). Sequências e estados da Saga: [saga.md](saga.md).
+Visão dos componentes da oficina na GCP e no compose local. Contratos: [HTTP](contratos-http.md), [eventos](eventos.md). Sequências e estados da Saga: [saga.md](saga.md). Domínio: [dominio/](dominio/). ADRs: [adrs/](adrs/).
 
 ## Componentes (GCP)
 
